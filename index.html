@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="./assets/style.css">
+  <link rel="stylesheet" href="style.css">
   <title>Frontend Mentor | Todo app</title>
 </head>
 <body>
@@ -16,10 +16,17 @@
     <h1>Todo</h1>
   </header>
   <main>
-    <input type="text">
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="Enter a new task" required>
+      <button type="submit">Add Task</button>
+    </form>
     <section>
       <ul>
-        <li>Example task</li>
+        <li>
+          Example task
+          <span class="delete-btn">❌</span>
+          <span class="edit-btn">✏️</span>
+        </li>
       </ul>
       <div>
           <p><!-- Add dynamic number --> items left</p>
@@ -37,5 +44,6 @@
     Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>.
     Coded by <a href="#">Karen Benites</a>.
   </footer>
+  <script src="script.js"></script>
 </body>
 </html>
