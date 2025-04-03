@@ -152,6 +152,13 @@ main{
     background-size: cover;
 }
 
+.edit-btn{
+    background-image: url("assets/icons/icon-edit.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .task__management{
     padding: 16px 20px;
     display: flex;

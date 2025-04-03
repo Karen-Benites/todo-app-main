@@ -1,49 +1,93 @@
 const taskForm = document.getElementById("task__form");
-
 const taskList = document.querySelector(".task__list");
-console.dir(taskList)
 
 taskForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
     const taskInput = document.getElementById("task__input");
-    console.dir(taskInput)
-
-    const task = taskInput.value;
-    console.log(task);
+    const task = taskInput.value.trim();
 
     if (task) {
-        taskList.append(createTaskElement(task, "task__item"));
+        taskList.append(createTaskElement(task));
         taskInput.value = "";
     }
 });
 
-function createTaskElement(task, className) {
-    const li = document.createElement("li");
-    li.className = className
-    li.append(createBlock("div", "task__description", (block)=>{
-        block.append(createButton("checked-btn task__item-btn"))
-        const taskcontainer = document.createElement("p")
-        taskcontainer.textContent = task
-        block.append(taskcontainer)
-    }))
-    li.append(createBlock("div", "task__edit-container", (block)=>{
-        block.append(createButton("delete-btn task__item-btn"))
-        block.append(createButton("edit-btn task__item-btn"))
-    }));
+taskList.addEventListener("click", (event)=>{
+    const target = event.target
+    if (target){
+        const classArray = Array.from(target.classList)
+        const deleteClass = classArray.find((classitem) => (classitem) === "delete-btn")
+        const editClass = classArray.find((classitem) => (classitem) === "edit-btn")
+        if (deleteClass){
+            const li = target.closest("li");
+            deleteTask(li)
+        } else if(editClass){
+            const li = target.closest("li");
+            editTask(li)
+        }
+    }
+    
+})
+
+function createElementWithClass(type, className, textContent = "") {
+    const element = document.createElement(type);
+    element.className = className;
+    if (textContent) element.textContent = textContent;
+    return element;
+}
+
+function createTaskElement(task) {
+    const li = createElementWithClass("li", "task__item");
+
+    // 📌 Description block
+    const descriptionBlock = createBlock("div", "task__description");
+    const checkBtn = createButton("checked-btn task__item-btn", "Checked task");
+    const taskText = createElementWithClass("p", "", task);
+
+    descriptionBlock.append(checkBtn, taskText);
+
+    // 📌 Editing block
+    const editBlock = createBlock("div", "task__edit-container");
+    const deleteBtn = createButton("delete-btn task__item-btn", "Delete task");
+    const editBtn = createButton("edit-btn task__item-btn", "Edit task");
+
+    editBlock.append(deleteBtn, editBtn);
+
+    // 🔗 Adding final strcuture
+    li.append(descriptionBlock, editBlock);
     return li;
 }
 
-function createBlock(type, className, callback){
-    //Create a generic block that has specific items
-    const block = document.createElement(type)
-    block.className = className
-    callback(block) //executes a callback where you add a specific item to the block
-    return block
+// ✅ Generic block creator
+function createBlock(type, className) {
+    return createElementWithClass(type, className);
 }
 
-function createButton(className) {
-    const btn = document.createElement("span");
+function createButton(className, label) {
+    const btn = document.createElement("button");
     btn.className = className;
+    btn.setAttribute("aria-label", label);
     return btn;
+}
+
+// ✅ Button creator
+function createButton(className, label) {
+    const btn = createElementWithClass("button", className);
+    btn.setAttribute("aria-label", label);
+    return btn;
+}
+
+function deleteTask(taskItem) {
+    if (confirm("¿Estás segura, seguro, de borrar este elemento?")) {
+        taskItem.remove();
+    }
+}
+
+function editTask(taskItem) {
+    const newTask = prompt("Please edit the task:", taskItem.firstChild.textContent);
+    if (newTask !== null) {
+        const paragraph = taskItem.querySelector("p")
+        paragraph.textContent = newTask
+    }
 }
