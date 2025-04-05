@@ -1,5 +1,8 @@
 const taskForm = document.getElementById("task__form");
 const taskList = document.querySelector(".task__list");
+const clearButton = document.querySelector(".clear-button")
+const toggleThemeButton = document.querySelector(".header__theme-button")
+loadTasks()
 
 taskForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -9,7 +12,9 @@ taskForm.addEventListener("submit", (event) => {
 
     if (task) {
         taskList.append(createTaskElement(task));
+        storeTaskInLocalStorage(task)
         taskInput.value = "";
+        pendingTasksCounter()
     }
 });
 
@@ -19,16 +24,44 @@ taskList.addEventListener("click", (event)=>{
         const classArray = Array.from(target.classList)
         const deleteClass = classArray.find((classitem) => (classitem) === "delete-btn")
         const editClass = classArray.find((classitem) => (classitem) === "edit-btn")
+        const checkClass = classArray.find((classitem) => (classitem) === "check-btn")
         if (deleteClass){
             const li = target.closest("li");
             deleteTask(li)
+            pendingTasksCounter()
         } else if(editClass){
             const li = target.closest("li");
             editTask(li)
+        } else if(checkClass){
+            const li = target.closest("li");
+            checkTask(li)
+            pendingTasksCounter()
         }
     }
     
 })
+
+clearButton.addEventListener("click", ()=>{
+    clearCompleted()
+})
+
+const currentTheme = localStorage.getItem("theme");
+
+toggleThemeButton.addEventListener('click', ()=>{
+    document.body.classList.toggle("dark-theme")
+    const button = document.querySelector(".header__theme-button")
+    button.classList.toggle("dark__icon")
+    const theme = document.body.classList.contains("dark-theme")
+    ? "dark"
+    : "light";
+  localStorage.setItem("theme", theme);
+})
+
+if (currentTheme === "dark") {
+    document.body.classList.add("dark-theme");
+    const button = document.querySelector(".header__theme-button")
+    button.classList.add("dark__icon")
+}
 
 function createElementWithClass(type, className, textContent = "") {
     const element = document.createElement(type);
@@ -42,8 +75,8 @@ function createTaskElement(task) {
 
     // 📌 Description block
     const descriptionBlock = createBlock("div", "task__description");
-    const checkBtn = createButton("checked-btn task__item-btn", "Checked task");
-    const taskText = createElementWithClass("p", "", task);
+    const checkBtn = createButton("check-btn task__item-btn", "Check task");
+    const taskText = createElementWithClass("p", "task__text", task);
 
     descriptionBlock.append(checkBtn, taskText);
 
@@ -79,8 +112,9 @@ function createButton(className, label) {
 }
 
 function deleteTask(taskItem) {
-    if (confirm("¿Estás segura, seguro, de borrar este elemento?")) {
-        taskItem.remove();
+    if (confirm("Are you sure about removing this task?")) {
+        taskItem.remove()
+        uploadLocalStorage()
     }
 }
 
@@ -89,5 +123,64 @@ function editTask(taskItem) {
     if (newTask !== null) {
         const paragraph = taskItem.querySelector("p")
         paragraph.textContent = newTask
+        uploadLocalStorage()
     }
+}
+
+function checkTask(taskItem){
+    const button = taskItem.querySelector(".check-btn")
+    const paragraph = taskItem.querySelector("p")
+    button.classList.toggle("task__checked-btn")
+    paragraph.classList.toggle("task__text-checked")
+}
+
+function completedTasksCollector(){
+    const taskChildrenArray = [...taskList.children]
+    const completedTasksArray = taskChildrenArray.filter((liElement)=>{
+        const button = liElement.querySelector(".check-btn")
+        return button.classList.contains("task__checked-btn")
+    })
+    return completedTasksArray
+}
+
+function pendingTasksCounter(){
+    let itemsLeft = 0
+    const totalTasks = taskList.children.length
+    const completedTasksArray = completedTasksCollector()
+    const completedTasks = completedTasksArray.length
+    itemsLeft = totalTasks-completedTasks
+    let spanContainer = document.querySelector(".task__management")
+    let spanElement = spanContainer.querySelector("span")
+    spanElement.textContent = itemsLeft
+}
+
+pendingTasksCounter()
+
+function clearCompleted(){
+    const completedTasksArray = completedTasksCollector()
+    completedTasksArray.forEach(task=> task.remove())
+    uploadLocalStorage()
+}
+
+function storeTaskInLocalStorage(task) {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.push(task);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    if (tasks.length >0){
+        tasks.forEach(task => {
+            taskList.appendChild(createTaskElement(task));
+        });
+    } else{
+        {}
+    }
+}
+
+function uploadLocalStorage(){
+    const tasks = Array.from(document.querySelectorAll(".task__item"))
+    const taskscontent = tasks.map(taskItem => taskItem.querySelector("p").textContent)
+    localStorage.setItem('tasks', JSON.stringify(taskscontent))
 }

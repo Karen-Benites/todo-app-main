@@ -14,28 +14,18 @@
 <body>
   <header class="header__container">
     <h1 class="header__title">TODO</h1>
-    <span class="header__theme-button"><img src="assets/icons/icon-moon.svg" alt="dark-theme-icon"></span>
+    <button class="header__theme-button" aria-label="theme-toggle"></button>
   </header>
   <main>
     <form id="task__form">
-      <input type="text" id="task__input" placeholder="Create new todo" required>
-      <button type="submit" class="summary__button">Add Task</button>
+      <input type="text" id="task__input" placeholder="Create new todo..." required>
+      <button type="submit" class="submit__button", aria-label="submit your task">Add Task</button>
     </form>
     <section class="task__dashboard">
       <ul class="task__list">
-        <li class="task__item">
-            <div class="task__description">
-              <button class="checked-btn task__item-btn" aria-label="Check task"></button>
-              <p>Example task</p>
-            </div>
-            <div class="task__edit-container">
-              <button class="delete-btn task__item-btn" aria-label="delete task"></button>
-              <button class="edit-btn task__item-btn" aria-label="edit task"></button>
-            </div>  
-        </li>
       </ul>
       <div class="task__management">
-          <p>items left</p>
+          <p><span></span> items left</p>
           <button class="clear-button">Clear Completed</button>
       </div>
     </section>

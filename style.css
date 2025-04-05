@@ -1,9 +1,7 @@
 :root{
     /* Primary Colors */
     --Bright-Blue: hsl(220, 98%, 61%);
-    --Check-Background:linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
-
-    /* hsl(192, 100%, 67%) to hsl(280, 87%, 65%) */
+    --Check-Background: linear-gradient(135deg, #5DF 0%, #C058F3 100%);
 
     /* Neutral */
     /* Light theme */
@@ -44,8 +42,12 @@ body{
     background-color: var(--Very-Light-Gray);
 }
 
+body.dark-theme {
+    background-color: var(--Very-Dark-Grayish-Blue);
+    color: #fff;
+}
+
 ul{
-    text-decoration: none;
     list-style-type: none;
 }
 
@@ -69,6 +71,32 @@ ul{
     letter-spacing: 10px;
 }
 
+.header__theme-button{
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-image: url(assets/icons/icon-sun.svg);
+    border-width: 0;
+    background-color: var(--Check-Background);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.dark__icon{
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-width: 0;
+    background-image: url(assets/icons/icon-moon.svg);
+    background-color: var(--Check-Background);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
 main{
     position: relative;
     top: -92px;
@@ -83,13 +111,25 @@ main{
     min-height: 42px;
     min-width: 282px;
     width: 88%;
+    padding: 14px 20px;
     margin-bottom: 16px;
     border-radius: 5px;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     background-color: white;
     box-shadow: 0px 35px 50px -15px rgba(194, 195, 214, 0.50);
+}
+
+
+#task__input{
+    border: none;
+    font-family: "Josefin Sans", sans-serif;
+}
+
+#task__input:focus-visible{
+    outline: none;
+    font-family: "Josefin Sans", sans-serif;
 }
 
 .task__dashboard{
@@ -135,10 +175,11 @@ main{
     height: 20px;
     background-color: white;
     border-width: 0;
+    cursor: pointer;
     /* border-with here will be overwritten in checked button class only */
 }
 
-.checked-btn{
+.check-btn{
     border-radius: 50%;
     border-color: var(--Light-Grayish-Blue);
     border-width: 1.5px;
@@ -150,6 +191,35 @@ main{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+.task__checked-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--Check-Background);
+    position: relative;
+}
+
+.task__checked-btn::after {
+    content: "";
+    width: 11px; /* Tamaño del check */
+    height: 9px; /* Tamaño del check */
+    background-image: url("assets/icons/icon-check.svg");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: absolute; /* Para que esté encima */
+}
+
+.task__text-checked{
+    color: var(--Light-Grayish-Blue);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: var(--normal);
+    line-height: normal;
+    letter-spacing: -0.167px;
+    text-decoration-line: line-through;
 }
 
 .edit-btn{
@@ -178,6 +248,10 @@ main{
     cursor: pointer;
 }
 
+.clear-button:hover{
+    color: var(--Very-Dark-Grayish-Blue);
+}
+
 .task__summary{
     width: 88%;
     height: 48px;
@@ -191,12 +265,16 @@ main{
     border-radius: 5px;
 }
 
-.summary__button{
+.submit__button, .summary__button{
     border-width: 0;
     background-color: white;
     font-weight: var(--bold);
     color: var(--Dark--Grayish-Blue);
     cursor: pointer;
+}
+
+.submit__button:hover{
+    color: var(--Very-Dark-Grayish-Blue);
 }
 
 .task__drag-instructions{
