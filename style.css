@@ -8,17 +8,15 @@
     --Very-Light-Gray: hsl(0, 0%, 98%);
     --Very-Light-Grayish-Blue: hsl(236, 33%, 92%);
     --Light-Grayish-Blue: hsl(233, 11%, 84%);
-    --Dark-Grayish-Blue: hsl(236, 9%, 61%);
-    --Very-Dark-Grayish-Blue: hsl(235, 19%, 35%);
+    --Dark-Grayish-Blue-LightTheme: hsl(236, 9%, 61%);
 
     /* Dark Theme */
     --Very-Dark-Blue: hsl(235, 21%, 11%);
-    --Very-Dark-Desaturated-Blue: hsl(235, 24%, 19%);
+    --Very-Dark-Desaturated-Blue: #25273D;
     --Light-Grayish-Blue: hsl(234, 39%, 85%);
     --Light-Grayish-Blue-hover: hsl(236, 33%, 92%);
-    --Dark--Grayish-Blue: hsl(234, 11%, 52%);
-    --Very-Dark-Grayish-Blue: hsl(233, 14%, 35%);
-    --Very-Dark-Grayish-Blue: hsl(237, 14%, 26%);
+    --Dark--Grayish-Blue: #767992;
+    --Very-Dark-Grayish-Blue: #4D5067;
 
     /* fonts */
     --body-font-size: 18px;
@@ -40,11 +38,11 @@ body{
     font-family: "Josefin Sans", sans-serif;
     min-width: 320px;
     background-color: var(--Very-Light-Gray);
+    position: relative;
 }
 
-body.dark-theme {
-    background-color: var(--Very-Dark-Grayish-Blue);
-    color: #fff;
+.dark-theme {
+    background-color: var(--Very-Dark-Blue);
 }
 
 ul{
@@ -62,6 +60,10 @@ ul{
     background-size: cover;
     display: flex;
     justify-content: space-between;
+}
+
+.dark-theme .header__container{
+    background-image: url(assets/images/bg-mobile-dark.jpg);
 }
 
 .header__title{
@@ -84,22 +86,14 @@ ul{
     cursor: pointer;
 }
 
-.dark__icon{
-    display: block;
-    width: 20px;
-    height: 20px;
-    border-width: 0;
+.dark-theme .header__theme-button{
     background-image: url(assets/icons/icon-moon.svg);
-    background-color: var(--Check-Background);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    cursor: pointer;
 }
 
 main{
     position: relative;
     top: -92px;
+    /* height: 100%; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -107,9 +101,12 @@ main{
 
 }
 
+#task__form, .task__dashboard, .task__summary{
+    min-width: 282px;
+    max-width: 540px;
+}
 #task__form {
     min-height: 42px;
-    min-width: 282px;
     width: 88%;
     padding: 14px 20px;
     margin-bottom: 16px;
@@ -121,10 +118,30 @@ main{
     box-shadow: 0px 35px 50px -15px rgba(194, 195, 214, 0.50);
 }
 
+.dark-theme #task__form{
+    box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.50);
+}
+
+.dark-theme #task__form,
+.dark-theme .task__dashboard,
+.dark-theme .task__summary,
+.dark-theme #task__input,
+.dark-theme .submit__button,
+.dark-theme .summary__button,
+.dark-theme .clear-button,
+.dark-theme .edit-btn,
+.dark-theme .delete-btn,
+.dark-theme .check-btn{
+    background-color: var(--Very-Dark-Desaturated-Blue);
+}
+
 
 #task__input{
+    display: block;
+    width: 45%;
     border: none;
     font-family: "Josefin Sans", sans-serif;
+    color: var(--Dark--Grayish-Blue);
 }
 
 #task__input:focus-visible{
@@ -132,8 +149,11 @@ main{
     font-family: "Josefin Sans", sans-serif;
 }
 
+.dark-theme #task__input{
+    color: var(--Dark--Grayish-Blue);
+}
+
 .task__dashboard{
-    min-width: 282px;
     max-height: 368px;
     width: 88%;
     margin-bottom: 16px;
@@ -142,16 +162,28 @@ main{
     box-shadow: 0px 35px 50px -15px rgba(194, 195, 214, 0.50);
 }
 
+.dark-theme .task__dashboard, .dark-theme .task__summary{
+    box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.50);
+}
+
 .task__item{
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
     width: 100%;
-    height: 40px;
+    height: 52px;
     font-size: 12px;
     font-weight: var(--normal);
     letter-spacing: -0.167px;
+    border-bottom: 1px solid var(--Very-Light-Grayish-Blue);
+    border-top: none;
+    border-left: none;
+    border-right: none
+}
+
+.dark-theme .task__item{
+    border-bottom: 1px solid var(--Very-Dark-Grayish-Blue);
 }
 
 .task__description{
@@ -162,11 +194,14 @@ main{
     color: var(--Very-Dark-Grayish-Blue);
 }
 
+.dark-theme .task__description{
+    color: var(--Very-Light-Grayish-Blue);
+}
+
 .task__edit-container{
     display: flex;
     align-items: flex-end;
     gap: 12px;
-
 }
 
 .task__item-btn{
@@ -184,6 +219,11 @@ main{
     border-color: var(--Light-Grayish-Blue);
     border-width: 1.5px;
     border-style: solid;
+}
+
+.check-btn:hover{
+    border-color: linear-gradient(135deg, #5DF 0%, #C058F3 100%);
+    border-width: 2.5px;
 }
 
 .delete-btn{
@@ -222,6 +262,10 @@ main{
     text-decoration-line: line-through;
 }
 
+.dark-theme .task__text-checked{
+    color: var(--Very-Dark-Grayish-Blue);
+}
+
 .edit-btn{
     background-image: url("assets/icons/icon-edit.svg");
     background-position: center;
@@ -242,14 +286,20 @@ main{
     border-width: 0;
     background-color: white;
     font-size: 12px;
-    font-weight: var(--normal);
+    font-weight: var(--bold);
     color: var(--Dark--Grayish-Blue);
     letter-spacing: -0.167px;
     cursor: pointer;
 }
 
-.clear-button:hover{
+.clear-button:hover, .submit__button:hover, .summary__button:hover{
     color: var(--Very-Dark-Grayish-Blue);
+}
+
+.dark-theme .clear-button:hover,
+.dark-theme .submit__button:hover,
+.dark-theme .summary__button:hover{
+    color: var(--Very-Light-Gray);
 }
 
 .task__summary{
@@ -273,20 +323,40 @@ main{
     cursor: pointer;
 }
 
-.submit__button:hover{
-    color: var(--Very-Dark-Grayish-Blue);
+.summary__button:active{
+    color: var(--Bright-Blue);
 }
 
 .task__drag-instructions{
     width: 88%;
     height: 100%;
     text-align: center;
-    background-color: white;
     color: var(--Dark--Grayish-Blue);
     letter-spacing: -0.194px;
     font-size: 14px;
     border-radius: 5px;
 }
 
-.attribution { font-size: 11px; text-align: center; }
-.attribution a { color: hsl(228, 45%, 44%); }
+.dark-theme .attribution { 
+    color: var(--Very-Light-Gray);
+}
+
+.attribution { 
+    position: relative;
+    bottom: 0;
+    font-size: 11px;
+    text-align: center; 
+}
+.attribution a { 
+    color: var(--Bright-Blue);
+}
+
+@media(min-width: 500px){
+    .header__container{
+        background-image: url(assets/images/bg-desktop-light.jpg);
+    }
+
+    .dark-theme .header__container{
+        background-image: url(assets/images/bg-desktop-dark.jpg);
+    }
+}

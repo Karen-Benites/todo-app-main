@@ -49,8 +49,6 @@ const currentTheme = localStorage.getItem("theme");
 
 toggleThemeButton.addEventListener('click', ()=>{
     document.body.classList.toggle("dark-theme")
-    const button = document.querySelector(".header__theme-button")
-    button.classList.toggle("dark__icon")
     const theme = document.body.classList.contains("dark-theme")
     ? "dark"
     : "light";
