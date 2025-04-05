@@ -4,6 +4,8 @@ const clearButton = document.querySelector(".clear-button")
 const toggleThemeButton = document.querySelector(".header__theme-button")
 loadTasks()
 
+//Event Listeners
+
 taskForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -60,6 +62,30 @@ if (currentTheme === "dark") {
     const button = document.querySelector(".header__theme-button")
     button.classList.add("dark__icon")
 }
+
+let mediaquery = window.matchMedia("(min-width: 768px)");
+
+function handleLayoutChange(event) {
+    const movedSection = document.querySelector(".task__summary");
+
+    if (event.matches) {
+        const newParent = document.querySelector(".task__management");
+        newParent.insertBefore(movedSection, newParent.children[1]);
+    } else {
+        const originalParent = document.querySelector("main");
+        const afterThis = document.querySelector(".task__dashboard");
+        originalParent.insertBefore(movedSection, afterThis.nextSibling);
+    }
+}
+
+// Ejecutar una vez al cargar la página
+handleLayoutChange(mediaquery);
+
+// Escuchar cambios posteriores en el ancho de pantalla
+mediaquery.addEventListener('change', handleLayoutChange);
+
+
+// Functions
 
 function createElementWithClass(type, className, textContent = "") {
     const element = document.createElement(type);

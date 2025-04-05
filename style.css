@@ -274,9 +274,11 @@ main{
 }
 
 .task__management{
+    height: 52px;
     padding: 16px 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 12px;
     font-weight: var(--normal);
     color: var(--Dark--Grayish-Blue);
@@ -358,5 +360,15 @@ main{
 
     .dark-theme .header__container{
         background-image: url(assets/images/bg-desktop-dark.jpg);
+    }
+}
+
+@media(min-width: 768px){
+    .task__summary{
+        box-shadow: none;
+        width: 10%;
+        height: 100%;
+        margin-bottom: 0;
+        border-radius: 0;
     }
 }
