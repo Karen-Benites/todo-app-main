@@ -14,7 +14,6 @@ This is a solution to the [Todo app challenge on Frontend Mentor](https://www.fr
   - [Continued development](#continued-development)
   - [Useful resources](#useful-resources)
 - [Author](#author)
-- [Acknowledgments](#acknowledgments)
 
 ## Overview
 
@@ -35,7 +34,7 @@ Users should be able to:
 ### Screenshot
 
 ![screenshot dark](./assets/images/screenshot-dark.png)
-![screenshot light](./assets/images/screenshot-dark.png)
+![screenshot light](./assets/images/Screenshot-light.png)
 
 ### Links
 
@@ -61,6 +60,8 @@ Regarding styling, I've learnt how to use CSS classes and specificity to impleme
 
 This was also my first time managing form data directlu from HTML.
 
+html: form structure
+
 ```html: form structure
 <form id="task__form">
       <input type="text" id="task__input" placeholder="Create new todo..." required>
@@ -68,11 +69,15 @@ This was also my first time managing form data directlu from HTML.
 </form>
 ```
 
+css: an example of implementing dark theme styles with existing css classes.
+
 ```css: an example of implementing dark theme styles with existing css classes.
 .dark-theme .task__dashboard, .dark-theme .task__summary{
     box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.50);
 }
 ```
+
+js: A single function example used in many other functions and event listeners
 
 ```js: A single function example used in many other functions and event listeners
 function createElementWithClass(type, className, textContent = "") {
