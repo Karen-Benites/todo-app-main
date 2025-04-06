@@ -78,10 +78,10 @@ function handleLayoutChange(event) {
     }
 }
 
-// Ejecutar una vez al cargar la página
+// Executes once when loading the page
 handleLayoutChange(mediaquery);
 
-// Escuchar cambios posteriores en el ancho de pantalla
+// Listen to post-loading screen changes
 mediaquery.addEventListener('change', handleLayoutChange);
 
 
