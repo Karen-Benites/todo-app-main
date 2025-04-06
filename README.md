@@ -111,4 +111,4 @@ Also, I'm also incorporating drag and drop functionality along with the filter s
 ## Author
 
 - Linkedin - [Karen Benites](https://www.linkedin.com/in/karenlbenites/)
-- Frontend Mentor - [@Karen-Benite](https://www.frontendmentor.io/profile/Karen-Benites)
+- Frontend Mentor - [@Karen-Benites](https://www.frontendmentor.io/profile/Karen-Benites)
