@@ -106,9 +106,9 @@ Also, I'm also incorporating drag and drop functionality along with the filter s
 ### Useful resources
 
 - [Platzi DOM course](https://platzi.com/cursos/document-object-model/) - This helped me for understanding and practicing DOM manipulation.
-- [Moredev Intermediate course](https://github.com/mouredev/hello-javascript) - This repository consists of a series of live classes regarding beginner and intermediate javascript concepts for all purposes. It helped me getting the basis of the language and go further with POO and advanced functions.
+- [Moredev Intermediate JS course](https://github.com/mouredev/hello-javascript) - This repository consists of a series of live classes regarding beginner and intermediate javascript concepts for all purposes. It helped me getting the basis of the language and go further with POO and advanced functions.
 
 ## Author
 
-- Linkedin - [Linkedin profile](https://www.linkedin.com/in/karenlbenites/)
-- Frontend Mentor - [@yourusername](https://www.frontendmentor.io/profile/Karen-Benites)
+- Linkedin - [Karen Benites](https://www.linkedin.com/in/karenlbenites/)
+- Frontend Mentor - [@Karen-Benite](https://www.frontendmentor.io/profile/Karen-Benites)
