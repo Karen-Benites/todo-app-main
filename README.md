@@ -56,7 +56,7 @@ Users should be able to:
 
 This is my first time manipulating DOM, so I really learnt a lot here. I've learned not only to manage click events, but also screen size changing events. I also reflected on functions building, realizing when to enclose a piece of code into a function, in order to re-use it in other parts of the script.
 
-Regarding styling, I've learnt how to use CSS classes and specificity to implement dark theme without adding unecessary CSS code. 
+Regarding styling, I've learnt how to use CSS classes and specificity to implement dark theme without adding unecessary CSS code.
 
 This was also my first time managing form data directlu from HTML.
 

@@ -1,0 +1,31 @@
+{
+  "name": "todo-app-main",
+  "version": "1.0.0",
+  "description": "basic to do web app for adding and managing tasks",
+  "keywords": [
+    "javascript",
+    "todo"
+  ],
+  "homepage": "https://github.com/Karen-Benites/todo-app-main#readme",
+  "bugs": {
+    "url": "https://github.com/Karen-Benites/todo-app-main/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karen-Benites/todo-app-main.git"
+  },
+  "license": "MIT",
+  "author": "Karen Benites <klbenites96@gmail.com>",
+  "type": "commonjs",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.1",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3"
+  }
+}
