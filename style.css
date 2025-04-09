@@ -232,6 +232,7 @@ main {
 }
 
 .check-btn {
+  appearance: none;
   border-radius: 50%;
   border-color: var(--Light-Grayish-Blue);
   border-width: 1.5px;

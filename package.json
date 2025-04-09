@@ -19,7 +19,11 @@
   "type": "commonjs",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "phoenix": "rm -f package-lock.json && rm -rf ./node_modules && npm i --no-fund --no-audit",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "lint-and-format": "npm run format && npm run lint"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",

@@ -1,69 +1,63 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="./assets/images/favicon-32x32.png"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <title>Frontend Mentor | Todo app</title>
-  </head>
-  <body>
-    <header class="header__container">
-      <h1 class="header__title" translate="no">TODO</h1>
-      <button class="header__theme-button" aria-label="theme-toggle"></button>
-    </header>
-    <main>
-      <form id="task__form">
-        <input
-          type="text"
-          id="task__input"
-          placeholder="Create new todo..."
-          required
-        />
-        <button
-          type="submit"
-          class="submit__button"
-          ,
-          aria-label="submit your task"
-        >
-          Add Task
-        </button>
-      </form>
-      <section class="task__dashboard">
-        <ul class="task__list"></ul>
-        <div class="task__management">
-          <p><span></span> tasks left</p>
-          <button class="clear-button">Clear Completed</button>
-        </div>
-      </section>
-      <section class="task__summary">
-        <button class="summary__button" data-filter="all">All</button>
-        <button class="summary__button" data-filter="active">Active</button>
-        <button class="summary__button" data-filter="completed">
-          Completed
-        </button>
-      </section>
-      <section class="task__drag-instructions">
-        <p>Drag and drop to reorder list</p>
-      </section>
-    </main>
-    <footer class="attribution">
-      Challenge by
-      <a href="https://www.frontendmentor.io?ref=challenge" target="_blank"
-        >Frontend Mentor</a
-      >. Coded by <a href="#">Karen Benites</a>.
-    </footer>
-    <script src="script.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Frontend Mentor | Todo app</title>
+</head>
+
+<body>
+  <header class="header__container">
+    <h1 class="header__title" translate="no">TODO</h1>
+    <button class="header__theme-button" aria-label="theme-toggle"></button>
+  </header>
+  <main>
+    <form id="task__form">
+      <input type="text" id="task__input" placeholder="Create new todo..." required />
+      <button type="submit" class="submit__button" , aria-label="submit your task">
+        Add Task
+      </button>
+    </form>
+    <section class="task__dashboard">
+      <ul class="task__list">
+        <li class="task__item">
+          <div class="task__description">
+            <input type="checkbox" class="check-btn task__item-btn" id="task-1744220111500"/>
+            <label for="task-1744220111500" class="task__text">Example task</label>
+          </div>
+          <div class="task__edit-container">
+            <button class="delete-btn task__item-btn" aria-label="Delete task">
+            </button><button class="edit-btn task__item-btn" aria-label="Edit task"></button>
+          </div>
+        </li>
+      </ul>
+      <div class="task__management">
+        <p><span></span> tasks left</p>
+        <button class="clear-button">Clear Completed</button>
+      </div>
+    </section>
+    <section class="task__summary">
+      <button class="summary__button" data-filter="all">All</button>
+      <button class="summary__button" data-filter="active">Active</button>
+      <button class="summary__button" data-filter="completed">Completed</button>
+    </section>
+    <section class="task__drag-instructions">
+      <p>Drag and drop to reorder list</p>
+    </section>
+  </main>
+  <footer class="attribution">
+    Challenge by
+    <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. Coded by <a
+      href="#">Karen Benites</a>.
+  </footer>
+  <script src="script.js"></script>
+</body>
+
 </html>
