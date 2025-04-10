@@ -8,6 +8,15 @@ const currentTheme = localStorage.getItem("theme")
 // eslint-disable-next-line no-unused-vars
 const filterButtons = document.querySelector(".task__summary")
 
+class Task {
+  constructor(text, id, creationDate) {
+    this.text = text
+    this.id = id
+    this.creationDate = creationDate.toISOString()
+    this.isCompleted = false
+  }
+}
+
 // 🌟 Init
 init()
 
@@ -17,11 +26,12 @@ taskForm.addEventListener("submit", event => {
 
   const taskInput = document.getElementById("task__input")
   const taskText = taskInput.value.trim()
-  const taskElement = createTaskElement(taskText)
+  const newTask = { text: taskText }
+  const taskElement = createTaskElement(newTask)
 
   if (taskText) {
-    taskList.append(taskElement)
-    storeTaskInLocalStorage(taskElement)
+    taskList.append(taskElement.DOMelement)
+    storeTaskInLocalStorage(taskElement.details)
     taskInput.value = ""
     updatePendingTasksCounter()
   }
@@ -68,6 +78,7 @@ mediaquery.addEventListener("change", handleLayoutChange)
 
 // 🌟 Init Function
 function init() {
+  normalizeOldTasks()
   loadTasksFromLocalStorage()
   updatePendingTasksCounter()
   handleLayoutChange(mediaquery)
@@ -95,13 +106,32 @@ function handleLayoutChange(event) {
 // 🌟 Task creation
 function createTaskElement(task) {
   const li = createElementWithClass("li", "task__item")
-  const taskID = `task-${Date.now()}`
+  const taskDate = task.creationDate //me da error en esta linea
+    ? new Date(task.creationDate) //me da error en esta linea
+    : new Date(Date.now())
+  const taskID = task.id || `task-${Date.now()}`
+  const isCompleted = task.isCompleted || false
+
+  //Creating new Object
+  const taskDetails = new Task(task.text, taskID, taskDate)
+  taskDetails.isCompleted = isCompleted
 
   // Description block
   const descriptionBlock = createBlock("div", "task__description")
-  const checkBtn = createCheckBox("check-btn task__item-btn", taskID)
-  const taskText = createElementWithClass("label", "task__text", task)
-  taskText.setAttribute("for", taskID)
+  const checkBtn = createCheckBox("check-btn task__item-btn", taskDetails.id)
+  const taskText = createElementWithClass(
+    "label",
+    "task__text",
+    taskDetails.text
+  )
+  taskText.setAttribute("for", taskDetails.id)
+
+  if (isCompleted) {
+    checkBtn.classList.add("task__checked-btn")
+    taskText.classList.add("task__text-checked")
+    checkBtn.checked = true
+  }
+
   descriptionBlock.append(checkBtn, taskText)
 
   // Edit/Delete block
@@ -110,7 +140,7 @@ function createTaskElement(task) {
   const editBtn = createButton("edit-btn task__item-btn", "Edit task")
   editBlock.append(deleteBtn, editBtn)
   li.append(descriptionBlock, editBlock)
-  return li
+  return { DOMelement: li, details: taskDetails }
 }
 
 // 🌟 Element creators
@@ -141,8 +171,9 @@ function createCheckBox(className, id) {
 // 🌟 Task logic
 function deleteTask(taskItem) {
   if (confirm("Are you sure about removing this task?")) {
+    const taskID = taskItem.querySelector("label").attributes.for.value
     taskItem.remove()
-    updateLocalStorageTask()
+    updateLocalStorageTask(taskID, "delete")
   }
 }
 
@@ -154,7 +185,8 @@ function editTask(taskItem) {
   if (newTask !== null) {
     const paragraph = taskItem.querySelector("label")
     paragraph.textContent = newTask
-    updateLocalStorageTask()
+    const taskID = paragraph.attributes.for.value
+    updateLocalStorageTask(taskID, "edit", false, newTask)
   }
 }
 
@@ -163,6 +195,9 @@ function toggleCheckTask(taskItem) {
   const paragraph = taskItem.querySelector(".task__text")
   button.classList.toggle("task__checked-btn")
   paragraph.classList.toggle("task__text-checked")
+  const ID = button.id
+  const isChecked = button.checked
+  updateLocalStorageTask(ID, "complete", isChecked)
 }
 
 // 🌟 Task status helpers
@@ -182,52 +217,63 @@ function updatePendingTasksCounter() {
 }
 
 function clearCompletedTasks() {
-  getCompletedTasks().forEach(task => task.remove())
-  updateLocalStorageTask()
+  getCompletedTasks().forEach(task => {
+    task.remove()
+    updateLocalStorageTask()
+  })
   updatePendingTasksCounter()
-}
-
-class Task{
-  constructor(text, id, creationDate){
-    this.text = text
-    this.id = id
-    this.creationDate = creationDate.toISOString()
-    this.isCompleted = false
-  }
 }
 
 // 🌟 Local Storage
 function storeTaskInLocalStorage(task) {
-  const taskText = task.querySelector(".task__text").textContent
-  const taskID = task.querySelector(".task__text").attributes.for.value
-  const taskDate = new Date(Number(taskID.split("-")[1]))
   const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-  tasksList.push(new Task(taskText, taskID, taskDate))
+  tasksList.push(task)
   localStorage.setItem("tasks", JSON.stringify(tasksList))
 }
 
-function updateLocalStorageTask() {
-  const tasksContent = Array.from(
-    document.querySelectorAll(".task__text")
-  ).map(p => p.textContent)
-  localStorage.setItem("tasks", JSON.stringify(tasksContent))
+function findLocalStorageTask(taskID) {
+  const localStorageTasks = JSON.parse(localStorage.getItem("tasks"))
+  const updatedTask = localStorageTasks.find(task => task.id === taskID)
+  const taskIndex = localStorageTasks.findIndex(task => task.id === taskID)
+  return [localStorageTasks, updatedTask, taskIndex]
 }
 
-
-/*Modificar updatelocalstorageTask
-En lugar de solo obtener el texto del la info del DOM actual, hay que obtener:
-Su ID, su texto, su creationDate y su estatus de completado.
-Como ya se tiene el ID, se podria actualizar el DOM sin tener que renderizar todo de nuevo?
-
-*/
-//El storeTask se modifica primero, luego modificaria el uptateLocalstoragetask que es quien actualiza los cambios hechos en el DOM
-//Y al ultimo cargo nuevamente esos datos en el loadTasksfromLocalstorage
+function updateLocalStorageTask(taskID, action, isChecked = false, text = "") {
+  const [localStorageTasks, updatedTask, taskIndex] =
+    findLocalStorageTask(taskID)
+  if (action === "edit") {
+    updatedTask.text = text
+    localStorageTasks[taskIndex] = updatedTask
+    localStorage.setItem("tasks", JSON.stringify(localStorageTasks))
+  } else if (action === "delete") {
+    localStorageTasks.splice(taskIndex, 1)
+    localStorage.setItem("tasks", JSON.stringify(localStorageTasks))
+  } else if (action === "complete") {
+    updatedTask.isCompleted = isChecked
+    localStorageTasks[taskIndex] = updatedTask
+    localStorage.setItem("tasks", JSON.stringify(localStorageTasks))
+  }
+}
 
 function loadTasksFromLocalStorage() {
   const tasks = JSON.parse(localStorage.getItem("tasks")) || []
   tasks.forEach(task => {
-    taskList.appendChild(createTaskElement(task))
+    taskList.appendChild(createTaskElement(task).DOMelement)
   })
+}
+
+function normalizeOldTasks() {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || []
+  const legacyTasks = tasks.filter(task => typeof task === "string")
+  if (legacyTasks.length != 0) {
+    const newTasks = legacyTasks.map(oldTask => {
+      const dateNow = Date.now()
+      return new Task(oldTask, `task-${dateNow}`, new Date(dateNow))
+    })
+    let cleanedTasks = tasks.filter(task => typeof task !== "string")
+    const updatedTaks = [...cleanedTasks, ...newTasks]
+    localStorage.setItem("tasks", JSON.stringify(updatedTaks))
+  }
 }
 
 // function filterTasks(filter){
