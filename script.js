@@ -5,9 +5,10 @@ const clearButton = document.querySelector(".clear-button")
 const toggleThemeButton = document.querySelector(".header__theme-button")
 const mediaquery = window.matchMedia("(min-width: 768px)")
 const currentTheme = localStorage.getItem("theme")
-// eslint-disable-next-line no-unused-vars
 const filterButtons = document.querySelector(".task__summary")
-
+const allButton = filterButtons.firstElementChild
+const completedButton = filterButtons.lastElementChild
+const activeButton = filterButtons.children[1]
 class Task {
   constructor(text, id, creationDate) {
     this.text = text
@@ -17,10 +18,8 @@ class Task {
   }
 }
 
-// 🌟 Init
 init()
 
-// 🌟 Event Listeners
 taskForm.addEventListener("submit", event => {
   event.preventDefault()
 
@@ -69,14 +68,30 @@ toggleThemeButton.addEventListener("click", () => {
 
 mediaquery.addEventListener("change", handleLayoutChange)
 
-// filterButtons.addEventListener('click', (event) => {
-//     if (event.target && event.target.classList.contains('summary__button')) {
-//         const filter = event.target.dataset.filter
-//         filterTasks(filter)
-//     }
-// })
+filterButtons.addEventListener('click', (event) => {
+    if (event.target && event.target.classList.contains('summary__button')) {
+        const filter = event.target.dataset.filter
+        filterTasks(filter)
+        switch (filter){
+          case 'all':
+            changeFilterTextColor(event.target, "summary__button-selected", completedButton, activeButton)
+            break
+          case "active":
+            changeFilterTextColor(event.target, "summary__button-selected", completedButton, allButton)
+            break
+          case "completed":
+            changeFilterTextColor(event.target, "summary__button-selected", activeButton, allButton)
+            break
+        }
+    }
+})
 
-// 🌟 Init Function
+
+function changeFilterTextColor(eventTarget, className, ...buttons){
+  eventTarget.classList.add(className)
+  buttons.forEach(button => button.classList.remove(className))
+}
+
 function init() {
   normalizeOldTasks()
   loadTasksFromLocalStorage()
@@ -89,7 +104,6 @@ function init() {
   }
 }
 
-// 🌟 Layout handling
 function handleLayoutChange(event) {
   const movedSection = document.querySelector(".task__summary")
 
@@ -103,7 +117,6 @@ function handleLayoutChange(event) {
   }
 }
 
-// 🌟 Task creation
 function createTaskElement(task) {
   const li = createElementWithClass("li", "task__item")
   const taskDate = task.creationDate //me da error en esta linea
@@ -112,11 +125,9 @@ function createTaskElement(task) {
   const taskID = task.id || `task-${Date.now()}`
   const isCompleted = task.isCompleted || false
 
-  //Creating new Object
   const taskDetails = new Task(task.text, taskID, taskDate)
   taskDetails.isCompleted = isCompleted
 
-  // Description block
   const descriptionBlock = createBlock("div", "task__description")
   const checkBtn = createCheckBox("check-btn task__item-btn", taskDetails.id)
   const taskText = createElementWithClass(
@@ -134,7 +145,6 @@ function createTaskElement(task) {
 
   descriptionBlock.append(checkBtn, taskText)
 
-  // Edit/Delete block
   const editBlock = createBlock("div", "task__edit-container")
   const deleteBtn = createButton("delete-btn task__item-btn", "Delete task")
   const editBtn = createButton("edit-btn task__item-btn", "Edit task")
@@ -143,7 +153,6 @@ function createTaskElement(task) {
   return { DOMelement: li, details: taskDetails }
 }
 
-// 🌟 Element creators
 function createElementWithClass(type, className, textContent = "") {
   const element = document.createElement(type)
   element.className = className
@@ -168,14 +177,13 @@ function createCheckBox(className, id) {
   return checkButton
 }
 
-// 🌟 Task logic
 function deleteTask(taskItem) {
   if (confirm("Are you sure about removing this task?")) {
     const taskID = taskItem.querySelector("label").attributes.for.value
     taskItem.remove()
     updateLocalStorageTask(taskID, "delete")
   }
-}
+} 
 
 function editTask(taskItem) {
   const newTask = prompt(
@@ -200,11 +208,9 @@ function toggleCheckTask(taskItem) {
   updateLocalStorageTask(ID, "complete", isChecked)
 }
 
-// 🌟 Task status helpers
 function getCompletedTasks() {
-  return [...taskList.children].filter(li =>
-    li.querySelector(".check-btn").classList.contains("task__checked-btn")
-  )
+  const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
+  return tasksList.filter(task => task.isCompleted === true)
 }
 
 function updatePendingTasksCounter() {
@@ -218,13 +224,15 @@ function updatePendingTasksCounter() {
 
 function clearCompletedTasks() {
   getCompletedTasks().forEach(task => {
-    task.remove()
-    updateLocalStorageTask()
+    const ID = task.id
+    const taskElement = document.getElementById(`${ID}`)
+    const taskLiParent = taskElement.closest("li")
+    taskLiParent.remove()
+    updateLocalStorageTask(ID, 'delete')
   })
   updatePendingTasksCounter()
 }
 
-// 🌟 Local Storage
 function storeTaskInLocalStorage(task) {
   const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
   tasksList.push(task)
@@ -276,11 +284,47 @@ function normalizeOldTasks() {
   }
 }
 
-// function filterTasks(filter){
-//     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-//     console.log(tasks)
-//     tasks.forEach((task) => {
-//         const taskcontainer = taskList.querySelector(task.)
-//         taskList.appendChild(createTaskElement(task));
-//     });
-// }
+function filterTasks(filter){
+    const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
+    const completedTasks = tasksList.filter(task => task.isCompleted === true)
+    const activeTasks = tasksList.filter(task => task.isCompleted === false)
+    switch(filter){
+      case "all":
+        tasksList.forEach((task) => {
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.remove("hidden")
+        });
+
+        break
+      case "completed":
+        activeTasks.forEach(task=>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.add("hidden")
+        })
+        completedTasks.forEach(task =>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.remove("hidden")
+        })
+        break
+      case "active":
+        completedTasks.forEach(task =>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.add("hidden")
+        })
+        activeTasks.forEach(task=>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.remove("hidden")
+        })
+        break
+    }
+}

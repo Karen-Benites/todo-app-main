@@ -49,6 +49,10 @@ ul {
   list-style-type: none;
 }
 
+li.hidden {
+  display: none;
+}
+
 .header__container {
   height: 200px;
   min-width: 320px;
@@ -368,6 +372,10 @@ main {
 
 .summary__button:active {
   color: var(--Bright-Blue);
+}
+
+.summary__button-selected, .dark-theme .summary__button-selected{
+  color: var(--Bright-Blue)
 }
 
 .task__drag-instructions {
