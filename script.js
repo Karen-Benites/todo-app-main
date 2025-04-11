@@ -9,6 +9,7 @@ const filterButtons = document.querySelector(".task__summary")
 const allButton = filterButtons.firstElementChild
 const completedButton = filterButtons.lastElementChild
 const activeButton = filterButtons.children[1]
+
 class Task {
   constructor(text, id, creationDate) {
     this.text = text
@@ -68,26 +69,40 @@ toggleThemeButton.addEventListener("click", () => {
 
 mediaquery.addEventListener("change", handleLayoutChange)
 
-filterButtons.addEventListener('click', (event) => {
-    if (event.target && event.target.classList.contains('summary__button')) {
-        const filter = event.target.dataset.filter
-        filterTasks(filter)
-        switch (filter){
-          case 'all':
-            changeFilterTextColor(event.target, "summary__button-selected", completedButton, activeButton)
-            break
-          case "active":
-            changeFilterTextColor(event.target, "summary__button-selected", completedButton, allButton)
-            break
-          case "completed":
-            changeFilterTextColor(event.target, "summary__button-selected", activeButton, allButton)
-            break
-        }
+filterButtons.addEventListener("click", event => {
+  if (event.target && event.target.classList.contains("summary__button")) {
+    const filter = event.target.dataset.filter
+    filterTasks(filter)
+    switch (filter) {
+      case "all":
+        changeFilterTextColor(
+          event.target,
+          "summary__button-selected",
+          completedButton,
+          activeButton
+        )
+        break
+      case "active":
+        changeFilterTextColor(
+          event.target,
+          "summary__button-selected",
+          completedButton,
+          allButton
+        )
+        break
+      case "completed":
+        changeFilterTextColor(
+          event.target,
+          "summary__button-selected",
+          activeButton,
+          allButton
+        )
+        break
     }
+  }
 })
 
-
-function changeFilterTextColor(eventTarget, className, ...buttons){
+function changeFilterTextColor(eventTarget, className, ...buttons) {
   eventTarget.classList.add(className)
   buttons.forEach(button => button.classList.remove(className))
 }
@@ -119,8 +134,8 @@ function handleLayoutChange(event) {
 
 function createTaskElement(task) {
   const li = createElementWithClass("li", "task__item")
-  const taskDate = task.creationDate //me da error en esta linea
-    ? new Date(task.creationDate) //me da error en esta linea
+  const taskDate = task.creationDate
+    ? new Date(task.creationDate)
     : new Date(Date.now())
   const taskID = task.id || `task-${Date.now()}`
   const isCompleted = task.isCompleted || false
@@ -183,7 +198,7 @@ function deleteTask(taskItem) {
     taskItem.remove()
     updateLocalStorageTask(taskID, "delete")
   }
-} 
+}
 
 function editTask(taskItem) {
   const newTask = prompt(
@@ -208,27 +223,38 @@ function toggleCheckTask(taskItem) {
   updateLocalStorageTask(ID, "complete", isChecked)
 }
 
-function getCompletedTasks() {
+function getTasksList(status) {
   const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-  return tasksList.filter(task => task.isCompleted === true)
+  switch (status) {
+    case "completed":
+      return tasksList.filter(task => task.isCompleted === true)
+    case "all":
+      return tasksList
+    case "active":
+      return tasksList.filter(task => task.isCompleted === false)
+  }
 }
 
 function updatePendingTasksCounter() {
   const totalTasks = taskList.children.length
-  const completedTasks = getCompletedTasks().length
+  const completedTasks = getTasksList("completed").length
   const itemsLeft = totalTasks - completedTasks
-
   const span = document.querySelector(".task__management span")
   if (span) span.textContent = itemsLeft
 }
 
+function getTaskData(task) {
+  const ID = task.id
+  const taskElement = document.getElementById(`${ID}`)
+  const taskLiParent = taskElement.closest("li")
+  return [ID, taskElement, taskLiParent]
+}
+
 function clearCompletedTasks() {
-  getCompletedTasks().forEach(task => {
-    const ID = task.id
-    const taskElement = document.getElementById(`${ID}`)
-    const taskLiParent = taskElement.closest("li")
+  getTasksList("completed").forEach(task => {
+    const [ID, , taskLiParent] = getTaskData(task)
     taskLiParent.remove()
-    updateLocalStorageTask(ID, 'delete')
+    updateLocalStorageTask(ID, "delete")
   })
   updatePendingTasksCounter()
 }
@@ -284,47 +310,33 @@ function normalizeOldTasks() {
   }
 }
 
-function filterTasks(filter){
-    const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-    const completedTasks = tasksList.filter(task => task.isCompleted === true)
-    const activeTasks = tasksList.filter(task => task.isCompleted === false)
-    switch(filter){
-      case "all":
-        tasksList.forEach((task) => {
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.remove("hidden")
-        });
+function filterTasks(filter) {
+  const tasksList = getTasksList("all")
+  const completedTasks = getTasksList("completed")
+  const activeTasks = getTasksList("active")
 
-        break
-      case "completed":
-        activeTasks.forEach(task=>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.add("hidden")
-        })
-        completedTasks.forEach(task =>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.remove("hidden")
-        })
-        break
-      case "active":
-        completedTasks.forEach(task =>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.add("hidden")
-        })
-        activeTasks.forEach(task=>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.remove("hidden")
-        })
-        break
-    }
+  function processTasksList(targetTasksList, action) {
+    targetTasksList.forEach(task => {
+      const [, , taskLiParent] = getTaskData(task)
+      if (action === "remove") {
+        taskLiParent.classList.remove("hidden")
+      } else if (action === "add") {
+        taskLiParent.classList.add("hidden")
+      }
+    })
+  }
+
+  switch (filter) {
+    case "all":
+      processTasksList(tasksList, "remove")
+      break
+    case "completed":
+      processTasksList(activeTasks, "add")
+      processTasksList(completedTasks, "remove")
+      break
+    case "active":
+      processTasksList(completedTasks, "add")
+      processTasksList(activeTasks, "remove")
+      break
+  }
 }

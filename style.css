@@ -374,8 +374,9 @@ main {
   color: var(--Bright-Blue);
 }
 
-.summary__button-selected, .dark-theme .summary__button-selected{
-  color: var(--Bright-Blue)
+.summary__button-selected,
+.dark-theme .summary__button-selected {
+  color: var(--Bright-Blue);
 }
 
 .task__drag-instructions {
