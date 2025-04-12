@@ -22,11 +22,11 @@ This is a solution to the [Todo app challenge on Frontend Mentor](https://www.fr
 Users should be able to:
 
 - View the optimal layout for the app depending on their device's screen size
-- See hover states for all interactive elements on the page (still building..)
+- See hover states for all interactive elements on the page
 - Add new todos to the list
 - Mark todos as complete
 - Delete todos from the list
-- Filter by all/active/complete todos (still building..)
+- Filter by all/active/complete todos
 - Clear all completed todos
 - Toggle light and dark mode
 - **Bonus**: Drag and drop to reorder items on the list (still building..)
@@ -58,50 +58,105 @@ This is my first time manipulating DOM, so I really learnt a lot here. I've lear
 
 Regarding styling, I've learnt how to use CSS classes and specificity to implement dark theme without adding unecessary CSS code.
 
-This was also my first time managing form data directlu from HTML.
-
-html: form structure
-
-```html: form structure
-<form id="task__form">
-      <input type="text" id="task__input" placeholder="Create new todo..." required>
-      <button type="submit" class="submit__button", aria-label="submit your task">Add Task</button>
-</form>
-```
+This was also my first time managing form data directly from HTML.
 
 css: an example of implementing dark theme styles with existing css classes.
 
-```css: an example of implementing dark theme styles with existing css classes.
+```css
 .dark-theme .task__dashboard, .dark-theme .task__summary{
     box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.50);
 }
 ```
 
-js: A single function example used in many other functions and event listeners
+js: How I refactored a function with lots of duplicated code.
 
-```js: A single function example used in many other functions and event listeners
-function createElementWithClass(type, className, textContent = "") {
-    const element = document.createElement(type);
-    element.className = className;
-    if (textContent) element.textContent = textContent;
-    return element;
+It went from this:
+
+```js
+function filterTasks(filter){
+    const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
+    const completedTasks = tasksList.filter(task => task.isCompleted === true)
+    const activeTasks = tasksList.filter(task => task.isCompleted === false)
+    switch(filter){
+      case "all":
+        tasksList.forEach((task) => {
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.remove("hidden")
+        });
+
+        break
+      case "completed":
+        activeTasks.forEach(task=>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.add("hidden")
+        })
+        completedTasks.forEach(task =>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.remove("hidden")
+        })
+        break
+      case "active":
+        completedTasks.forEach(task =>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.add("hidden")
+        })
+        activeTasks.forEach(task=>{
+          const ID = task.id
+          const taskElement = document.getElementById(`${ID}`)
+          const taskLiParent = taskElement.closest("li")
+          taskLiParent.classList.remove("hidden")
+        })
+        break
+    }
 }
+```
 
-function completedTasksCollector(){
-    const taskChildrenArray = [...taskList.children]
-    const completedTasksArray = taskChildrenArray.filter((liElement)=>{
-        const button = liElement.querySelector(".check-btn")
-        return button.classList.contains("task__checked-btn")
+to this:
+
+```js
+function filterTasks(filter) {
+  const tasksList = getTasksList("all")
+  const completedTasks = getTasksList("completed")
+  const activeTasks = getTasksList("active")
+
+  function processTasksList(targetTasksList, action) {
+    targetTasksList.forEach(task => {
+      const [, , taskLiParent] = getTaskData(task)
+      if (action === "remove") {
+        taskLiParent.classList.remove("hidden")
+      } else if (action === "add") {
+        taskLiParent.classList.add("hidden")
+      }
     })
-    return completedTasksArray
+  }
+
+  switch (filter) {
+    case "all":
+      processTasksList(tasksList, "remove")
+      break
+    case "completed":
+      processTasksList(activeTasks, "add")
+      processTasksList(completedTasks, "remove")
+      break
+    case "active":
+      processTasksList(completedTasks, "add")
+      processTasksList(activeTasks, "remove")
+      break
+  }
 }
 ```
 
 ### Continued development
 
-I'd like to implement check tasks functionality using HTML checkboxes. Now I'm using regular buttons and event listeners to change button styles, but later I realized I've could have done the same thing using more semantic HTML. Checkboxes are the perfect tag to CHECK completed tasks.
-
-Also, I'm also incorporating drag and drop functionality along with the filter section.
+I'm working on incorporating drag and drop functionality. Also, I'm figuring out how to disable some sticky hover states on touch devices that can complicate user experience when interacting with the checkbox. I've already applied some suggestions that work fine on Chrome mobile simulation on my laptop, but fail on my actual smartphone chrome browser.
 
 ### Useful resources
 
