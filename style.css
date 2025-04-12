@@ -281,6 +281,9 @@ main {
   background-position: center;
   background-repeat: no-repeat;
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .task__checked-btn:hover::after{
@@ -477,7 +480,7 @@ main {
 }
 
 /* 2. Estilos para dispositivos táctiles - sin efectos hover */
-@media (hover: none) or (pointer: coarse) {
+@media (hover: none) and (pointer: coarse) {
   .header__theme-button:hover,
   .task__item-btn:hover,
   .clear-button:hover,
@@ -520,6 +523,7 @@ main {
   .summary__button:active {
     color: var(--Bright-Blue);
   }
+
 }
 
 /* 3. Asegurar que el estado seleccionado siempre sea visible */
