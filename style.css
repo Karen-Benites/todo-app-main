@@ -102,7 +102,6 @@ li.hidden {
 main {
   position: relative;
   top: -92px;
-  /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -225,14 +224,7 @@ main {
 
 .task__item-btn:hover {
   transform: scale(1.15);
-  box-shadow: 0 0 6px 2px hsla(220, 98%, 61%, 0.5);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.delete-btn:hover {
-  box-shadow: 0 0 6px 2px rgba(192, 88, 243, 0.4);
+  transition:transform 0.2s ease;
 }
 
 .check-btn {
@@ -282,13 +274,21 @@ main {
 
 .task__checked-btn::after {
   content: "";
-  width: 11px; /* Tamaño del check */
-  height: 9px; /* Tamaño del check */
+  width: 11px;
+  height: 9px;
   background-image: url("assets/icons/icon-check.svg");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  position: absolute; /* Para que esté encima */
+  position: absolute;
+}
+
+.task__checked-btn:hover::after{
+  filter: brightness(0.8);
+}
+
+.dark-theme .task__checked-btn:hover::after{
+  filter: none;
 }
 
 .task__text-checked {
@@ -425,4 +425,105 @@ main {
   .task__dashboard {
     margin-bottom: 48px;
   }
+}
+
+/* 1. Estilos para dispositivos con capacidad de hover genuina (mouse/touchpad) */
+@media (hover: hover) and (pointer: fine) {
+
+  .header__theme-button:hover {
+    transform: scale(1.25);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .task__item-btn:hover {
+    transform: scale(1.15);
+    transition:transform 0.2s ease;
+  }
+  
+  .check-btn:hover {
+    padding: 1.5px;
+    background: linear-gradient(135deg, #5df 0%, #c058f3 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .check-btn:hover::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 50%;
+  }
+  
+  .dark-theme .check-btn:hover::before {
+    background-color: var(--Very-Dark-Desaturated-Blue);
+  }
+  
+  .clear-button:hover,
+  .submit__button:hover,
+  .summary__button:hover {
+    color: var(--Very-Dark-Grayish-Blue);
+    transform: scale(1.08);
+    transition: transform 0.15s ease;
+  }
+  
+  .dark-theme .clear-button:hover,
+  .dark-theme .submit__button:hover,
+  .dark-theme .summary__button:hover {
+    color: var(--Very-Light-Gray);
+  }
+}
+
+/* 2. Estilos para dispositivos táctiles - sin efectos hover */
+@media (hover: none) or (pointer: coarse) {
+  .header__theme-button:hover,
+  .task__item-btn:hover,
+  .clear-button:hover,
+  .submit__button:hover,
+  .summary__button:hover {
+    transform: none;
+    transition: none;
+  }
+  
+  .check-btn:hover {
+    padding: 0;
+    background: none;
+    border-radius: 50%;
+    border-color: var(--Light-Grayish-Blue);
+    border-width: 1.5px;
+    border-style: solid;
+    display: inline-block;
+  }
+  
+  .check-btn:hover::before {
+    content: none;
+  }
+  
+  /* Optimizar los toques para dispositivos táctiles */
+  .header__theme-button,
+  .task__item-btn,
+  .clear-button,
+  .submit__button,
+  .summary__button {
+    touch-action: manipulation;
+  }
+  
+  /* Mejorar los estados activos para dispositivos táctiles */
+  .task__item-btn:active {
+    transform: scale(1.15);
+    transition: transform 0.1s ease;
+  }
+  
+  /* Estado activo para los botones de selección en dispositivos táctiles */
+  .summary__button:active {
+    color: var(--Bright-Blue);
+  }
+}
+
+/* 3. Asegurar que el estado seleccionado siempre sea visible */
+.summary__button-selected,
+.dark-theme .summary__button-selected {
+  color: var(--Bright-Blue);
 }
