@@ -1,15 +1,34 @@
-// 🌟 Element references
+// Consts
+const ACTIONS = {
+  DELETE: "delete",
+  EDIT: "edit",
+  COMPLETE: "complete"
+};
+
+const FILTERS = {
+  ALL: "all",
+  ACTIVE: "active",
+  COMPLETED: "completed"
+};
+
+const STORAGE_KEYS = {
+  TASKS: "tasks",
+  THEME: "theme"
+};
+
+// DOM Elements
 const taskForm = document.getElementById("task__form")
 const taskList = document.querySelector(".task__list")
 const clearButton = document.querySelector(".clear-button")
 const toggleThemeButton = document.querySelector(".header__theme-button")
 const mediaquery = window.matchMedia("(min-width: 768px)")
-const currentTheme = localStorage.getItem("theme")
+const currentTheme = localStorage.getItem(STORAGE_KEYS.THEME)
 const filterButtons = document.querySelector(".task__summary")
 const allButton = filterButtons.firstElementChild
 const completedButton = filterButtons.lastElementChild
 const activeButton = filterButtons.children[1]
 
+// Data Model
 class Task {
   constructor(text, id, creationDate) {
     this.text = text
@@ -19,9 +38,35 @@ class Task {
   }
 }
 
+//Init
 init()
 
-taskForm.addEventListener("submit", event => {
+//Event Listeners
+
+taskForm.addEventListener("submit", event => handleFormSubmit(event))
+taskList.addEventListener("click", event => handleTaskAction(event))
+clearButton.addEventListener("click", clearCompletedTasks)
+toggleThemeButton.addEventListener("click", toggleTheme)
+mediaquery.addEventListener("change", handleLayoutChange)
+filterButtons.addEventListener("click", event => handleFilterButtonClick(event))
+
+// Main functions
+
+function init() {
+  normalizeOldTasks()
+  loadTasksFromLocalStorage()
+  updatePendingTasksCounter()
+  handleLayoutChange(mediaquery)
+
+  if (currentTheme === "dark") {
+    document.body.classList.add("dark-theme")
+    toggleThemeButton.classList.add("dark__icon")
+  }
+}
+
+// Event hanlders
+
+function handleFormSubmit(event){
   event.preventDefault()
 
   const taskInput = document.getElementById("task__input")
@@ -35,9 +80,9 @@ taskForm.addEventListener("submit", event => {
     taskInput.value = ""
     updatePendingTasksCounter()
   }
-})
+}
 
-taskList.addEventListener("click", event => {
+function handleTaskAction(event){
   const target = event.target
   if (!target) return
 
@@ -53,28 +98,22 @@ taskList.addEventListener("click", event => {
     toggleCheckTask(li)
     updatePendingTasksCounter()
   }
-})
+}
 
-clearButton.addEventListener("click", () => {
-  clearCompletedTasks()
-})
-
-toggleThemeButton.addEventListener("click", () => {
+function toggleTheme(){
   document.body.classList.toggle("dark-theme")
   const theme = document.body.classList.contains("dark-theme")
     ? "dark"
     : "light"
-  localStorage.setItem("theme", theme)
-})
+  localStorage.setItem(STORAGE_KEYS.THEME, theme)
+}
 
-mediaquery.addEventListener("change", handleLayoutChange)
-
-filterButtons.addEventListener("click", event => {
+function handleFilterButtonClick(event){
   if (event.target && event.target.classList.contains("summary__button")) {
     const filter = event.target.dataset.filter
-    filterTasks(filter)
+    filterTasksOnScreen(filter)
     switch (filter) {
-      case "all":
+      case FILTERS.ALL:
         changeFilterTextColor(
           event.target,
           "summary__button-selected",
@@ -82,7 +121,7 @@ filterButtons.addEventListener("click", event => {
           activeButton
         )
         break
-      case "active":
+      case FILTERS.ACTIVE:
         changeFilterTextColor(
           event.target,
           "summary__button-selected",
@@ -90,7 +129,7 @@ filterButtons.addEventListener("click", event => {
           allButton
         )
         break
-      case "completed":
+      case FILTERS.COMPLETED:
         changeFilterTextColor(
           event.target,
           "summary__button-selected",
@@ -99,23 +138,6 @@ filterButtons.addEventListener("click", event => {
         )
         break
     }
-  }
-})
-
-function changeFilterTextColor(eventTarget, className, ...buttons) {
-  eventTarget.classList.add(className)
-  buttons.forEach(button => button.classList.remove(className))
-}
-
-function init() {
-  normalizeOldTasks()
-  loadTasksFromLocalStorage()
-  updatePendingTasksCounter()
-  handleLayoutChange(mediaquery)
-
-  if (currentTheme === "dark") {
-    document.body.classList.add("dark-theme")
-    toggleThemeButton.classList.add("dark__icon")
   }
 }
 
@@ -131,6 +153,8 @@ function handleLayoutChange(event) {
     originalParent.insertBefore(movedSection, afterThis.nextSibling)
   }
 }
+
+// UI Functions
 
 function createTaskElement(task) {
   const li = createElementWithClass("li", "task__item")
@@ -196,7 +220,7 @@ function deleteTask(taskItem) {
   if (confirm("Are you sure about removing this task?")) {
     const taskID = taskItem.querySelector("label").attributes.for.value
     taskItem.remove()
-    updateLocalStorageTask(taskID, "delete")
+    updateLocalStorageTask(taskID, ACTIONS.DELETE)
   }
 }
 
@@ -209,111 +233,32 @@ function editTask(taskItem) {
     const paragraph = taskItem.querySelector("label")
     paragraph.textContent = newTask
     const taskID = paragraph.attributes.for.value
-    updateLocalStorageTask(taskID, "edit", false, newTask)
+    updateLocalStorageTask(taskID, ACTIONS.EDIT, false, newTask)
   }
+}
+
+function toggleTaskUIState(taskItem) {
+  const button = taskItem.querySelector(".check-btn");
+  const paragraph = taskItem.querySelector(".task__text");
+  button.classList.toggle("task__checked-btn");
+  paragraph.classList.toggle("task__text-checked");
+  return { id: button.id, isChecked: button.checked };
 }
 
 function toggleCheckTask(taskItem) {
-  const button = taskItem.querySelector(".check-btn")
-  const paragraph = taskItem.querySelector(".task__text")
-  button.classList.toggle("task__checked-btn")
-  paragraph.classList.toggle("task__text-checked")
-  const ID = button.id
-  const isChecked = button.checked
-  updateLocalStorageTask(ID, "complete", isChecked)
+  const { id, isChecked } = toggleTaskUIState(taskItem);
+  updateLocalStorageTask(id, ACTIONS.COMPLETE, isChecked);
 }
 
-function getTasksList(status) {
-  const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-  switch (status) {
-    case "completed":
-      return tasksList.filter(task => task.isCompleted === true)
-    case "all":
-      return tasksList
-    case "active":
-      return tasksList.filter(task => task.isCompleted === false)
-  }
+function changeFilterTextColor(eventTarget, className, ...buttons) {
+  eventTarget.classList.add(className)
+  buttons.forEach(button => button.classList.remove(className))
 }
 
-function updatePendingTasksCounter() {
-  const totalTasks = taskList.children.length
-  const completedTasks = getTasksList("completed").length
-  const itemsLeft = totalTasks - completedTasks
-  const span = document.querySelector(".task__management span")
-  if (span) span.textContent = itemsLeft
-}
-
-function getTaskData(task) {
-  const ID = task.id
-  const taskElement = document.getElementById(`${ID}`)
-  const taskLiParent = taskElement.closest("li")
-  return [ID, taskElement, taskLiParent]
-}
-
-function clearCompletedTasks() {
-  getTasksList("completed").forEach(task => {
-    const [ID, , taskLiParent] = getTaskData(task)
-    taskLiParent.remove()
-    updateLocalStorageTask(ID, "delete")
-  })
-  updatePendingTasksCounter()
-}
-
-function storeTaskInLocalStorage(task) {
-  const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-  tasksList.push(task)
-  localStorage.setItem("tasks", JSON.stringify(tasksList))
-}
-
-function findLocalStorageTask(taskID) {
-  const localStorageTasks = JSON.parse(localStorage.getItem("tasks"))
-  const updatedTask = localStorageTasks.find(task => task.id === taskID)
-  const taskIndex = localStorageTasks.findIndex(task => task.id === taskID)
-  return [localStorageTasks, updatedTask, taskIndex]
-}
-
-function updateLocalStorageTask(taskID, action, isChecked = false, text = "") {
-  const [localStorageTasks, updatedTask, taskIndex] =
-    findLocalStorageTask(taskID)
-  if (action === "edit") {
-    updatedTask.text = text
-    localStorageTasks[taskIndex] = updatedTask
-    localStorage.setItem("tasks", JSON.stringify(localStorageTasks))
-  } else if (action === "delete") {
-    localStorageTasks.splice(taskIndex, 1)
-    localStorage.setItem("tasks", JSON.stringify(localStorageTasks))
-  } else if (action === "complete") {
-    updatedTask.isCompleted = isChecked
-    localStorageTasks[taskIndex] = updatedTask
-    localStorage.setItem("tasks", JSON.stringify(localStorageTasks))
-  }
-}
-
-function loadTasksFromLocalStorage() {
-  const tasks = JSON.parse(localStorage.getItem("tasks")) || []
-  tasks.forEach(task => {
-    taskList.appendChild(createTaskElement(task).DOMelement)
-  })
-}
-
-function normalizeOldTasks() {
-  const tasks = JSON.parse(localStorage.getItem("tasks")) || []
-  const legacyTasks = tasks.filter(task => typeof task === "string")
-  if (legacyTasks.length != 0) {
-    const newTasks = legacyTasks.map(oldTask => {
-      const dateNow = Date.now()
-      return new Task(oldTask, `task-${dateNow}`, new Date(dateNow))
-    })
-    let cleanedTasks = tasks.filter(task => typeof task !== "string")
-    const updatedTaks = [...cleanedTasks, ...newTasks]
-    localStorage.setItem("tasks", JSON.stringify(updatedTaks))
-  }
-}
-
-function filterTasks(filter) {
-  const tasksList = getTasksList("all")
-  const completedTasks = getTasksList("completed")
-  const activeTasks = getTasksList("active")
+function filterTasksOnScreen(filter) {
+  const tasksList = GetFilteredTasksByStatus(FILTERS.ALL)
+  const completedTasks = GetFilteredTasksByStatus(FILTERS.COMPLETED)
+  const activeTasks = GetFilteredTasksByStatus(FILTERS.ACTIVE)
 
   function processTasksList(targetTasksList, action) {
     targetTasksList.forEach(task => {
@@ -327,16 +272,105 @@ function filterTasks(filter) {
   }
 
   switch (filter) {
-    case "all":
+    case FILTERS.ALL:
       processTasksList(tasksList, "remove")
       break
-    case "completed":
+    case FILTERS.COMPLETED:
       processTasksList(activeTasks, "add")
       processTasksList(completedTasks, "remove")
       break
-    case "active":
+    case FILTERS.ACTIVE:
       processTasksList(completedTasks, "add")
       processTasksList(activeTasks, "remove")
       break
+  }
+}
+
+// Data Storage Functions
+
+function GetFilteredTasksByStatus(status) {
+  const tasksList = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  switch (status) {
+    case FILTERS.COMPLETED:
+      return tasksList.filter(task => task.isCompleted === true)
+    case FILTERS.ALL:
+      return tasksList
+    case FILTERS.ACTIVE:
+      return tasksList.filter(task => task.isCompleted === false)
+  }
+}
+
+function updatePendingTasksCounter() {
+  const totalTasks = taskList.children.length
+  const completedTasks = GetFilteredTasksByStatus(FILTERS.COMPLETED).length
+  const itemsLeft = totalTasks - completedTasks
+  const span = document.querySelector(".task__management span")
+  if (span) span.textContent = itemsLeft
+}
+
+function getTaskData(task) {
+  const ID = task.id
+  const taskElement = document.getElementById(`${ID}`)
+  const taskLiParent = taskElement.closest("li")
+  return [ID, taskElement, taskLiParent]
+}
+
+function clearCompletedTasks() {
+  GetFilteredTasksByStatus(FILTERS.COMPLETED).forEach(task => {
+    const [ID, , taskLiParent] = getTaskData(task)
+    taskLiParent.remove()
+    updateLocalStorageTask(ID, ACTIONS.DELETE)
+  })
+  updatePendingTasksCounter()
+}
+
+function storeTaskInLocalStorage(task) {
+  const tasksList = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  tasksList.push(task)
+  localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasksList))
+}
+
+function findLocalStorageTask(taskID) {
+  const localStorageTasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS))
+  const updatedTask = localStorageTasks.find(task => task.id === taskID)
+  const taskIndex = localStorageTasks.findIndex(task => task.id === taskID)
+  return [localStorageTasks, updatedTask, taskIndex]
+}
+
+function updateLocalStorageTask(taskID, action, isChecked = false, text = "") {
+  const [localStorageTasks, updatedTask, taskIndex] =
+    findLocalStorageTask(taskID)
+  if (action === ACTIONS.EDIT) {
+    updatedTask.text = text
+    localStorageTasks[taskIndex] = updatedTask
+    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(localStorageTasks))
+  } else if (action === ACTIONS.DELETE) {
+    localStorageTasks.splice(taskIndex, 1)
+    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(localStorageTasks))
+  } else if (action === ACTIONS.COMPLETE) {
+    updatedTask.isCompleted = isChecked
+    localStorageTasks[taskIndex] = updatedTask
+    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(localStorageTasks))
+  }
+}
+
+function loadTasksFromLocalStorage() {
+  const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  tasks.forEach(task => {
+    taskList.appendChild(createTaskElement(task).DOMelement)
+  })
+}
+
+function normalizeOldTasks() {
+  const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  const legacyTasks = tasks.filter(task => typeof task === "string")
+  if (legacyTasks.length != 0) {
+    const newTasks = legacyTasks.map(oldTask => {
+      const dateNow = Date.now()
+      return new Task(oldTask, `task-${dateNow}`, new Date(dateNow))
+    })
+    let cleanedTasks = tasks.filter(task => typeof task !== "string")
+    const updatedTaks = [...cleanedTasks, ...newTasks]
+    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(updatedTaks))
   }
 }
