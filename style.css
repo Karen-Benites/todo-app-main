@@ -526,7 +526,7 @@ main {
 
 }
 
-/* 3. Asegurar que el estado seleccionado siempre sea visible */
+/* Asegurar que el estado seleccionado siempre sea visible */
 .summary__button-selected,
 .dark-theme .summary__button-selected {
   color: var(--Bright-Blue);

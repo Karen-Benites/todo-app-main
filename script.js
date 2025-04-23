@@ -1,4 +1,5 @@
 // Consts
+
 const ACTIONS = {
   DELETE: "delete",
   EDIT: "edit",
@@ -27,6 +28,16 @@ const filterButtons = document.querySelector(".task__summary")
 const allButton = filterButtons.firstElementChild
 const completedButton = filterButtons.lastElementChild
 const activeButton = filterButtons.children[1]
+
+new Sortable(document.querySelector('.task__list'), {
+  animation: 150,
+  onEnd: function (event) {
+    let StorageTasksList = JSON.parse(localStorage.getItem('tasks')) || [];
+    const movedTask = StorageTasksList.splice(event.oldIndex,1)[0]
+    StorageTasksList.splice(event.newIndex,0,movedTask)
+    localStorage.setItem('tasks', JSON.stringify(StorageTasksList));
+  }
+});
 
 // Data Model
 class Task {
@@ -374,3 +385,4 @@ function normalizeOldTasks() {
     localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(updatedTaks))
   }
 }
+
