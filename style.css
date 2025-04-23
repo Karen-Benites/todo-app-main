@@ -189,6 +189,30 @@ main {
   border-top: none;
   border-left: none;
   border-right: none;
+  cursor: move;
+}
+
+.sortable-chosen {
+  background-color: var(--Very-Light-Gray);
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+  background: var(--Light-Grayish-Blue);
+  border-radius: 8px;
+}
+
+.sortable-drag {
+  cursor: grabbing;
+  transition: transform 0.2s ease-in-out;
+}
+
+.dark-theme .sortable-chosen{
+  background-color: var(--Dark--Grayish-Blue);
 }
 
 .dark-theme .task__item {

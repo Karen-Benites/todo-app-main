@@ -1,5 +1,4 @@
 // Consts
-
 const ACTIONS = {
   DELETE: "delete",
   EDIT: "edit",
