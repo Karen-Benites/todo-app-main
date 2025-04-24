@@ -182,6 +182,7 @@ main {
 
 .task__list{
   max-height: 308px;
+  padding: 4px 12px;
   overflow-y: scroll;
 }
 
@@ -442,7 +443,7 @@ main {
 
 /*Scroll bar en navegadores basados en Webkit: Chrome, Edge, Safari */
 .task__list::-webkit-scrollbar {
-  width: 8px;
+  width: 32px;
 }
 
 .task__list::-webkit-scrollbar-track {
@@ -462,7 +463,7 @@ main {
 
 /*scrollbar en Firefox */
 .task__list {
-  scrollbar-width: thin;
+  scrollbar-width: auto;
   scrollbar-color: var(--Light-Grayish-Blue) transparent;
 }
 
@@ -500,6 +501,14 @@ body.dark-theme .task__list {
 
   .task__dashboard {
     margin-bottom: 48px;
+  }
+
+  .task__list::-webkit-scrollbar {
+    width: 16px; /* más fácil de agarrar en mobile */
+  }
+
+  .task__list {
+    scrollbar-width: auto; /* para Firefox */
   }
 }
 
