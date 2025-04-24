@@ -2,19 +2,19 @@
 const ACTIONS = {
   DELETE: "delete",
   EDIT: "edit",
-  COMPLETE: "complete"
-};
+  COMPLETE: "complete",
+}
 
 const FILTERS = {
   ALL: "all",
   ACTIVE: "active",
-  COMPLETED: "completed"
-};
+  COMPLETED: "completed",
+}
 
 const STORAGE_KEYS = {
   TASKS: "tasks",
-  THEME: "theme"
-};
+  THEME: "theme",
+}
 
 // DOM Elements
 const taskForm = document.getElementById("task__form")
@@ -28,15 +28,15 @@ const allButton = filterButtons.firstElementChild
 const completedButton = filterButtons.lastElementChild
 const activeButton = filterButtons.children[1]
 
-new Sortable(document.querySelector('.task__list'), {
+new Sortable(document.querySelector(".task__list"), {
   animation: 150,
   onEnd: function (event) {
-    let StorageTasksList = JSON.parse(localStorage.getItem('tasks')) || [];
-    const movedTask = StorageTasksList.splice(event.oldIndex,1)[0]
-    StorageTasksList.splice(event.newIndex,0,movedTask)
-    localStorage.setItem('tasks', JSON.stringify(StorageTasksList));
-  }
-});
+    let StorageTasksList = JSON.parse(localStorage.getItem("tasks")) || []
+    const movedTask = StorageTasksList.splice(event.oldIndex, 1)[0]
+    StorageTasksList.splice(event.newIndex, 0, movedTask)
+    localStorage.setItem("tasks", JSON.stringify(StorageTasksList))
+  },
+})
 
 // Data Model
 class Task {
@@ -76,7 +76,7 @@ function init() {
 
 // Event hanlders
 
-function handleFormSubmit(event){
+function handleFormSubmit(event) {
   event.preventDefault()
 
   const taskInput = document.getElementById("task__input")
@@ -92,7 +92,7 @@ function handleFormSubmit(event){
   }
 }
 
-function handleTaskAction(event){
+function handleTaskAction(event) {
   const target = event.target
   if (!target) return
 
@@ -110,7 +110,7 @@ function handleTaskAction(event){
   }
 }
 
-function toggleTheme(){
+function toggleTheme() {
   document.body.classList.toggle("dark-theme")
   const theme = document.body.classList.contains("dark-theme")
     ? "dark"
@@ -118,7 +118,7 @@ function toggleTheme(){
   localStorage.setItem(STORAGE_KEYS.THEME, theme)
 }
 
-function handleFilterButtonClick(event){
+function handleFilterButtonClick(event) {
   if (event.target && event.target.classList.contains("summary__button")) {
     const filter = event.target.dataset.filter
     filterTasksOnScreen(filter)
@@ -248,16 +248,16 @@ function editTask(taskItem) {
 }
 
 function toggleTaskUIState(taskItem) {
-  const button = taskItem.querySelector(".check-btn");
-  const paragraph = taskItem.querySelector(".task__text");
-  button.classList.toggle("task__checked-btn");
-  paragraph.classList.toggle("task__text-checked");
-  return { id: button.id, isChecked: button.checked };
+  const button = taskItem.querySelector(".check-btn")
+  const paragraph = taskItem.querySelector(".task__text")
+  button.classList.toggle("task__checked-btn")
+  paragraph.classList.toggle("task__text-checked")
+  return { id: button.id, isChecked: button.checked }
 }
 
 function toggleCheckTask(taskItem) {
-  const { id, isChecked } = toggleTaskUIState(taskItem);
-  updateLocalStorageTask(id, ACTIONS.COMPLETE, isChecked);
+  const { id, isChecked } = toggleTaskUIState(taskItem)
+  updateLocalStorageTask(id, ACTIONS.COMPLETE, isChecked)
 }
 
 function changeFilterTextColor(eventTarget, className, ...buttons) {
@@ -384,4 +384,3 @@ function normalizeOldTasks() {
     localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(updatedTaks))
   }
 }
-

@@ -180,7 +180,7 @@ main {
   box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.5);
 }
 
-.task__list{
+.task__list {
   max-height: 308px;
   padding: 4px 28px 4px 12px;
   overflow-y: scroll;
@@ -222,7 +222,7 @@ main {
   transition: transform 0.2s ease-in-out;
 }
 
-.dark-theme .sortable-chosen{
+.dark-theme .sortable-chosen {
   background-color: var(--Dark--Grayish-Blue);
 }
 
@@ -259,7 +259,7 @@ main {
 
 .task__item-btn:hover {
   transform: scale(1.15);
-  transition:transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .check-btn {
@@ -321,11 +321,11 @@ main {
   transform: translate(-50%, -50%);
 }
 
-.task__checked-btn:hover::after{
+.task__checked-btn:hover::after {
   filter: brightness(0.8);
 }
 
-.dark-theme .task__checked-btn:hover::after{
+.dark-theme .task__checked-btn:hover::after {
   filter: none;
 }
 
@@ -479,7 +479,6 @@ body.dark-theme .task__list {
   scrollbar-color: var(--Dark--Grayish-Blue) transparent;
 }
 
-
 @media (min-width: 500px) {
   .header__container {
     background-image: url(assets/images/bg-desktop-light.jpg);
@@ -514,17 +513,16 @@ body.dark-theme .task__list {
 
 /* 1. Estilos para dispositivos con capacidad de hover genuina (mouse/touchpad) */
 @media (hover: hover) and (pointer: fine) {
-
   .header__theme-button:hover {
     transform: scale(1.25);
     transition: transform 0.2s ease-in-out;
   }
-  
+
   .task__item-btn:hover {
     transform: scale(1.15);
-    transition:transform 0.2s ease;
+    transition: transform 0.2s ease;
   }
-  
+
   .check-btn:hover {
     padding: 1.5px;
     background: linear-gradient(135deg, #5df 0%, #c058f3 100%);
@@ -533,7 +531,7 @@ body.dark-theme .task__list {
     align-items: center;
     justify-content: center;
   }
-  
+
   .check-btn:hover::before {
     content: "";
     width: 100%;
@@ -541,11 +539,11 @@ body.dark-theme .task__list {
     background-color: white;
     border-radius: 50%;
   }
-  
+
   .dark-theme .check-btn:hover::before {
     background-color: var(--Very-Dark-Desaturated-Blue);
   }
-  
+
   .clear-button:hover,
   .submit__button:hover,
   .summary__button:hover {
@@ -553,7 +551,7 @@ body.dark-theme .task__list {
     transform: scale(1.08);
     transition: transform 0.15s ease;
   }
-  
+
   .dark-theme .clear-button:hover,
   .dark-theme .submit__button:hover,
   .dark-theme .summary__button:hover {
@@ -571,7 +569,7 @@ body.dark-theme .task__list {
     transform: none;
     transition: none;
   }
-  
+
   .check-btn:hover {
     padding: 0;
     background: none;
@@ -581,11 +579,11 @@ body.dark-theme .task__list {
     border-style: solid;
     display: inline-block;
   }
-  
+
   .check-btn:hover::before {
     content: none;
   }
-  
+
   /* Optimizar los toques para dispositivos táctiles */
   .header__theme-button,
   .task__item-btn,
@@ -594,18 +592,17 @@ body.dark-theme .task__list {
   .summary__button {
     touch-action: manipulation;
   }
-  
+
   /* Mejorar los estados activos para dispositivos táctiles */
   .task__item-btn:active {
     transform: scale(1.15);
     transition: transform 0.1s ease;
   }
-  
+
   /* Estado activo para los botones de selección en dispositivos táctiles */
   .summary__button:active {
     color: var(--Bright-Blue);
   }
-
 }
 
 /* Asegurar que el estado seleccionado siempre sea visible */

@@ -29,7 +29,7 @@ Users should be able to:
 - Filter by all/active/complete todos
 - Clear all completed todos
 - Toggle light and dark mode
-- **Bonus**: Drag and drop to reorder items on the list (still building..)
+- **Bonus**: Drag and drop to reorder items on the list
 
 ### Screenshot
 
@@ -51,20 +51,28 @@ Users should be able to:
 - Flexbox
 - Mobile-first workflow
 - Vanilla Javascript
+- Sortable js library
 
 ### What I learned
 
-This is my first time manipulating DOM, so I really learnt a lot here. I've learned not only to manage click events, but also screen size changing events. I also reflected on functions building, realizing when to enclose a piece of code into a function, in order to re-use it in other parts of the script.
+This was my first time working with the DOM, and I learned a lot throughout the process. I got hands-on experience handling not only click events, but also screen resize events. I also took the opportunity to reflect on function design—understanding when and why to wrap code in reusable functions to make my script cleaner and more efficient.
 
-Regarding styling, I've learnt how to use CSS classes and specificity to implement dark theme without adding unecessary CSS code.
+When it comes to styling, I explored how to implement a dark theme using existing CSS classes and specificity, avoiding unnecessary or redundant CSS rules.
 
-This was also my first time managing form data directly from HTML.
+One unexpected challenge was dealing with styling issues on mobile browsers, particularly in Chrome. I discovered that Android often applies default styles to elements like scrollbars and sticky hover states, which are very difficult to override with CSS. These limitations forced me to rethink and redesign certain parts of the interface to ensure a better user experience.
 
-css: an example of implementing dark theme styles with existing css classes.
+The toughest part of the project was managing the interaction between drag-and-drop functionality and vertical scrolling on mobile devices. Scrolling through draggable tasks was frustrating, so I ended up adding space on the right side of the task container to enable smooth scrolling without interfering with drag-and-drop.
+
+I also had my first experience handling form data directly from HTML, which was a great learning opportunity.
+
+💡 CSS tip: Check out how I implemented dark theme styles by reusing existing CSS classes effectively.
+
+Regarding Javascript, this was also my first time trying a js library for helping me building the drag and drop functionality: Sortable js. After doing some internet research, I found out this simple yet effective library that, with few lines of code, allowed me to build an amazing drag and drop effect on tasks.
 
 ```css
-.dark-theme .task__dashboard, .dark-theme .task__summary{
-    box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.50);
+.dark-theme .task__dashboard,
+.dark-theme .task__summary {
+  box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.5);
 }
 ```
 
@@ -73,49 +81,49 @@ js: How I refactored a function with lots of duplicated code.
 It went from this:
 
 ```js
-function filterTasks(filter){
-    const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-    const completedTasks = tasksList.filter(task => task.isCompleted === true)
-    const activeTasks = tasksList.filter(task => task.isCompleted === false)
-    switch(filter){
-      case "all":
-        tasksList.forEach((task) => {
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.remove("hidden")
-        });
+function filterTasks(filter) {
+  const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
+  const completedTasks = tasksList.filter(task => task.isCompleted === true)
+  const activeTasks = tasksList.filter(task => task.isCompleted === false)
+  switch (filter) {
+    case "all":
+      tasksList.forEach(task => {
+        const ID = task.id
+        const taskElement = document.getElementById(`${ID}`)
+        const taskLiParent = taskElement.closest("li")
+        taskLiParent.classList.remove("hidden")
+      })
 
-        break
-      case "completed":
-        activeTasks.forEach(task=>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.add("hidden")
-        })
-        completedTasks.forEach(task =>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.remove("hidden")
-        })
-        break
-      case "active":
-        completedTasks.forEach(task =>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.add("hidden")
-        })
-        activeTasks.forEach(task=>{
-          const ID = task.id
-          const taskElement = document.getElementById(`${ID}`)
-          const taskLiParent = taskElement.closest("li")
-          taskLiParent.classList.remove("hidden")
-        })
-        break
-    }
+      break
+    case "completed":
+      activeTasks.forEach(task => {
+        const ID = task.id
+        const taskElement = document.getElementById(`${ID}`)
+        const taskLiParent = taskElement.closest("li")
+        taskLiParent.classList.add("hidden")
+      })
+      completedTasks.forEach(task => {
+        const ID = task.id
+        const taskElement = document.getElementById(`${ID}`)
+        const taskLiParent = taskElement.closest("li")
+        taskLiParent.classList.remove("hidden")
+      })
+      break
+    case "active":
+      completedTasks.forEach(task => {
+        const ID = task.id
+        const taskElement = document.getElementById(`${ID}`)
+        const taskLiParent = taskElement.closest("li")
+        taskLiParent.classList.add("hidden")
+      })
+      activeTasks.forEach(task => {
+        const ID = task.id
+        const taskElement = document.getElementById(`${ID}`)
+        const taskLiParent = taskElement.closest("li")
+        taskLiParent.classList.remove("hidden")
+      })
+      break
+  }
 }
 ```
 
@@ -154,14 +162,11 @@ function filterTasks(filter) {
 }
 ```
 
-### Continued development
-
-I'm working on incorporating drag and drop functionality. Also, I'm figuring out how to disable some sticky hover states on touch devices that can complicate user experience when interacting with the checkbox. I've already applied some suggestions that work fine on Chrome mobile simulation on my laptop, but fail on my actual smartphone chrome browser.
-
 ### Useful resources
 
 - [Platzi DOM course](https://platzi.com/cursos/document-object-model/) - This helped me for understanding and practicing DOM manipulation.
 - [Moredev Intermediate JS course](https://github.com/mouredev/hello-javascript) - This repository consists of a series of live classes regarding beginner and intermediate javascript concepts for all purposes. It helped me getting the basis of the language and go further with POO and advanced functions.
+- [Sortable JS library](https://sortablejs.github.io/Sortable/) - The js library that helped me build the drag and drop functionality
 
 ## Author
 
