@@ -57,6 +57,8 @@ Users should be able to:
 
 This was my first time working with the DOM, and I learned a lot throughout the process. I got hands-on experience handling not only click events, but also screen resize events. I also took the opportunity to reflect on function design—understanding when and why to wrap code in reusable functions to make my script cleaner and more efficient.
 
+To ensure I was following clean code practices, I added prettier and eslint to check basic coding rules that I personally like to follow. These tools helped me make sure that those principles are applied throughout the entire project.
+
 When it comes to styling, I explored how to implement a dark theme using existing CSS classes and specificity, avoiding unnecessary or redundant CSS rules.
 
 One unexpected challenge was dealing with styling issues on mobile browsers, particularly in Chrome. I discovered that Android often applies default styles to elements like scrollbars and sticky hover states, which are very difficult to override with CSS. These limitations forced me to rethink and redesign certain parts of the interface to ensure a better user experience.
@@ -167,6 +169,8 @@ function filterTasks(filter) {
 - [Platzi DOM course](https://platzi.com/cursos/document-object-model/) - This helped me for understanding and practicing DOM manipulation.
 - [Moredev Intermediate JS course](https://github.com/mouredev/hello-javascript) - This repository consists of a series of live classes regarding beginner and intermediate javascript concepts for all purposes. It helped me getting the basis of the language and go further with POO and advanced functions.
 - [Sortable JS library](https://sortablejs.github.io/Sortable/) - The js library that helped me build the drag and drop functionality
+- [Prettier](https://prettier.io/docs/install) - A js code formatter, ensuring consistent style
+- [Eslint](https://eslint.org/) - An extra code checker to find and fix problems with your JavaScript code, f.e: unused variables.
 
 ## Author
 
