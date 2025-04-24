@@ -182,7 +182,7 @@ main {
 
 .task__list{
   max-height: 308px;
-  padding: 4px 12px;
+  padding: 4px 28px 4px 12px;
   overflow-y: scroll;
 }
 
@@ -443,7 +443,7 @@ main {
 
 /*Scroll bar en navegadores basados en Webkit: Chrome, Edge, Safari */
 .task__list::-webkit-scrollbar {
-  width: 32px;
+  width: 20px;
 }
 
 .task__list::-webkit-scrollbar-track {
