@@ -1,20 +1,5 @@
-// Consts
-const ACTIONS = {
-  DELETE: "delete",
-  EDIT: "edit",
-  COMPLETE: "complete",
-}
-
-const FILTERS = {
-  ALL: "all",
-  ACTIVE: "active",
-  COMPLETED: "completed",
-}
-
-const STORAGE_KEYS = {
-  TASKS: "tasks",
-  THEME: "theme",
-}
+import storageGateway from "./StorageGateway.mjs"
+import { ACTIONS, FILTERS } from "./ActionKeys.mjs"
 
 // DOM Elements
 const taskForm = document.getElementById("task__form")
@@ -22,7 +7,7 @@ const taskList = document.querySelector(".task__list")
 const clearButton = document.querySelector(".clear-button")
 const toggleThemeButton = document.querySelector(".header__theme-button")
 const mediaquery = window.matchMedia("(min-width: 768px)")
-const currentTheme = localStorage.getItem(STORAGE_KEYS.THEME)
+const currentTheme = storageGateway.getTheme()
 const filterButtons = document.querySelector(".task__summary")
 const allButton = filterButtons.firstElementChild
 const completedButton = filterButtons.lastElementChild
@@ -31,10 +16,10 @@ const activeButton = filterButtons.children[1]
 new Sortable(document.querySelector(".task__list"), {
   animation: 150,
   onEnd: function (event) {
-    let StorageTasksList = JSON.parse(localStorage.getItem("tasks")) || []
+    let StorageTasksList = storageGateway.getTasks() || []
     const movedTask = StorageTasksList.splice(event.oldIndex, 1)[0]
     StorageTasksList.splice(event.newIndex, 0, movedTask)
-    localStorage.setItem("tasks", JSON.stringify(StorageTasksList))
+    storageGateway.setTasks(StorageTasksList)
   },
 })
 
@@ -115,7 +100,7 @@ function toggleTheme() {
   const theme = document.body.classList.contains("dark-theme")
     ? "dark"
     : "light"
-  localStorage.setItem(STORAGE_KEYS.THEME, theme)
+  storageGateway.setTheme(theme)
 }
 
 function handleFilterButtonClick(event) {
@@ -299,7 +284,7 @@ function filterTasksOnScreen(filter) {
 // Data Storage Functions
 
 function GetFilteredTasksByStatus(status) {
-  const tasksList = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  const tasksList = storageGateway.getTasks() || []
   switch (status) {
     case FILTERS.COMPLETED:
       return tasksList.filter(task => task.isCompleted === true)
@@ -335,13 +320,13 @@ function clearCompletedTasks() {
 }
 
 function storeTaskInLocalStorage(task) {
-  const tasksList = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  const tasksList = storageGateway.getTasks() || []
   tasksList.push(task)
-  localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasksList))
+  storageGateway.setTasks(tasksList)
 }
 
 function findLocalStorageTask(taskID) {
-  const localStorageTasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS))
+  const localStorageTasks = storageGateway.getTasks()
   const updatedTask = localStorageTasks.find(task => task.id === taskID)
   const taskIndex = localStorageTasks.findIndex(task => task.id === taskID)
   return [localStorageTasks, updatedTask, taskIndex]
@@ -353,26 +338,26 @@ function updateLocalStorageTask(taskID, action, isChecked = false, text = "") {
   if (action === ACTIONS.EDIT) {
     updatedTask.text = text
     localStorageTasks[taskIndex] = updatedTask
-    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(localStorageTasks))
+    storageGateway.setTasks(localStorageTasks)
   } else if (action === ACTIONS.DELETE) {
     localStorageTasks.splice(taskIndex, 1)
-    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(localStorageTasks))
+    storageGateway.setTasks(localStorageTasks)
   } else if (action === ACTIONS.COMPLETE) {
     updatedTask.isCompleted = isChecked
     localStorageTasks[taskIndex] = updatedTask
-    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(localStorageTasks))
+    storageGateway.setTasks(localStorageTasks)
   }
 }
 
 function loadTasksFromLocalStorage() {
-  const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  const tasks = storageGateway.getTasks() || []
   tasks.forEach(task => {
     taskList.appendChild(createTaskElement(task).DOMelement)
   })
 }
 
 function normalizeOldTasks() {
-  const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || []
+  const tasks = storageGateway.getTasks() || []
   const legacyTasks = tasks.filter(task => typeof task === "string")
   if (legacyTasks.length != 0) {
     const newTasks = legacyTasks.map(oldTask => {
@@ -381,6 +366,6 @@ function normalizeOldTasks() {
     })
     let cleanedTasks = tasks.filter(task => typeof task !== "string")
     const updatedTaks = [...cleanedTasks, ...newTasks]
-    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(updatedTaks))
+    storageGateway.setTasks(updatedTaks)
   }
 }
