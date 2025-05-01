@@ -15,5 +15,4 @@ const STORAGE_KEYS = {
   THEME: "theme",
 }
 
-export { ACTIONS, FILTERS }
-export default STORAGE_KEYS
+export { ACTIONS, FILTERS, STORAGE_KEYS }
