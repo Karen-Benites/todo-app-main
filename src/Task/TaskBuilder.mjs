@@ -8,7 +8,6 @@ export default class TaskBuilder {
 
     build() {
         const li = this.#createElement("li", "task__item");
-
         const descriptionBlock = this.#createElement("div", "task__description");
         const checkbox = this.#createCheckbox(this.task.id);
         const label = this.#createElement("label", "task__text", this.task.text);
@@ -43,7 +42,7 @@ export default class TaskBuilder {
     #createElement(tag, className, text = "") {
         const element = document.createElement(tag);
         element.className = className;
-        if (textContent) element.textContent = text;
+        if (text) element.textContent = text;
         return element;
     }
 
@@ -57,7 +56,6 @@ export default class TaskBuilder {
     #createButton(className, label, onClick) {
         const btn = this.#createElement("button", `${className} task__item-btn`);
         btn.setAttribute("aria-label", `${label} task`);
-        btn.textContent = label;
         btn.addEventListener("click", onClick);
         return btn;
     }

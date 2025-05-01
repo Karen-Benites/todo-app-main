@@ -2,6 +2,10 @@ import { ACTIONS, FILTERS} from "./ActionKeys.mjs"
 import ThemeManager  from "./Theme/ThemeStorageManager.mjs" 
 import TaskManager from "./Task/TaskStorageManager.mjs"
 import Task from "./Task/TaskModel.mjs"
+import TaskBuilder from "./Task/TaskBuilder.mjs";
+import normalizeTaskData from "./utils/normalizeData.mjs";
+import TaskService from "./Task/TaskService.mjs";
+
 
 // DOM Elements
 const taskForm = document.getElementById("task__form")
@@ -51,19 +55,37 @@ function init() {
   }
 }
 
+function renderTask(rawTask) {
+  const normalized = normalizeTaskData(rawTask);
+  const task = new Task(
+    normalized.text,
+    normalized.id,
+    normalized.creationDate
+  );
+  task.isCompleted = normalized.isCompleted;
+
+  const builder = new TaskBuilder(task, {
+    onDelete: () => console.log("Eliminar", task.id),
+    onEdit: () => console.log("Editar", task.id),
+    onToggle: () => console.log("Completar", task.id),
+  });
+
+  return {
+    element: builder.build(),
+    taskInstance: task,
+  };
+}
+
 // Event hanlders
 
 function handleFormSubmit(event) {
   event.preventDefault()
-
   const taskInput = document.getElementById("task__input")
   const taskText = taskInput.value.trim()
-  const newTask = { text: taskText }
-  const taskElement = createTaskElement(newTask)
-
   if (taskText) {
-    taskList.append(taskElement.DOMelement)
-    storeTaskInLocalStorage(taskElement.details)
+    const { element, taskInstance } = renderTask(taskText);
+    taskList.append(element)
+    storeTaskInLocalStorage(taskInstance)
     taskInput.value = ""
     updatePendingTasksCounter()
   }
@@ -77,10 +99,10 @@ function handleTaskAction(event) {
   const li = target.closest("li")
 
   if (classList.includes("delete-btn")) {
-    deleteTask(li)
+    deleteUITask(li)
     updatePendingTasksCounter()
   } else if (classList.includes("edit-btn")) {
-    editTask(li)
+    editUITask(li)
   } else if (classList.includes("check-btn")) {
     toggleCheckTask(li)
     updatePendingTasksCounter()
@@ -143,75 +165,15 @@ function handleLayoutChange(event) {
 
 // UI Functions
 
-function createTaskElement(task) {
-  const li = createElementWithClass("li", "task__item")
-  const taskDate = task.creationDate
-    ? new Date(task.creationDate)
-    : new Date(Date.now())
-  const taskID = task.id || `task-${Date.now()}`
-  const isCompleted = task.isCompleted || false
-
-  const taskDetails = new Task(task.text, taskID, taskDate)
-  taskDetails.isCompleted = isCompleted
-
-  const descriptionBlock = createBlock("div", "task__description")
-  const checkBtn = createCheckBox("check-btn task__item-btn", taskDetails.id)
-  const taskText = createElementWithClass(
-    "label",
-    "task__text",
-    taskDetails.text
-  )
-  taskText.setAttribute("for", taskDetails.id)
-
-  if (isCompleted) {
-    checkBtn.classList.add("task__checked-btn")
-    taskText.classList.add("task__text-checked")
-    checkBtn.checked = true
-  }
-
-  descriptionBlock.append(checkBtn, taskText)
-
-  const editBlock = createBlock("div", "task__edit-container")
-  const deleteBtn = createButton("delete-btn task__item-btn", "Delete task")
-  const editBtn = createButton("edit-btn task__item-btn", "Edit task")
-  editBlock.append(deleteBtn, editBtn)
-  li.append(descriptionBlock, editBlock)
-  return { DOMelement: li, details: taskDetails }
-}
-
-function createElementWithClass(type, className, textContent = "") {
-  const element = document.createElement(type)
-  element.className = className
-  if (textContent) element.textContent = textContent
-  return element
-}
-
-function createBlock(type, className) {
-  return createElementWithClass(type, className)
-}
-
-function createButton(className, label) {
-  const btn = createElementWithClass("button", className)
-  btn.setAttribute("aria-label", label)
-  return btn
-}
-
-function createCheckBox(className, id) {
-  const checkButton = createElementWithClass("input", className)
-  checkButton.setAttribute("type", "checkbox")
-  checkButton.setAttribute("id", id)
-  return checkButton
-}
-
-function deleteTask(taskItem) {
+function deleteUITask(taskItem) {
   if (confirm("Are you sure about removing this task?")) {
     const taskID = taskItem.querySelector("label").attributes.for.value
     taskItem.remove()
-    updateLocalStorageTask(taskID, ACTIONS.DELETE)
+    TaskService.deleteTask(taskID)
   }
 }
 
-function editTask(taskItem) {
+function editUITask(taskItem) {
   const newTask = prompt(
     "Please edit the task:",
     taskItem.querySelector("label").textContent
@@ -220,7 +182,7 @@ function editTask(taskItem) {
     const paragraph = taskItem.querySelector("label")
     paragraph.textContent = newTask
     const taskID = paragraph.attributes.for.value
-    updateLocalStorageTask(taskID, ACTIONS.EDIT, false, newTask)
+    TaskService.editTask(taskID, newTask)
   }
 }
 
@@ -234,7 +196,7 @@ function toggleTaskUIState(taskItem) {
 
 function toggleCheckTask(taskItem) {
   const { id, isChecked } = toggleTaskUIState(taskItem)
-  updateLocalStorageTask(id, ACTIONS.COMPLETE, isChecked)
+  TaskService.toggleCompletion(id, isChecked)
 }
 
 function changeFilterTextColor(eventTarget, className, ...buttons) {
@@ -306,7 +268,7 @@ function clearCompletedTasks() {
   GetFilteredTasksByStatus(FILTERS.COMPLETED).forEach(task => {
     const [ID, , taskLiParent] = getTaskData(task)
     taskLiParent.remove()
-    updateLocalStorageTask(ID, ACTIONS.DELETE)
+    TaskService.deleteTask(ID)
   })
   updatePendingTasksCounter()
 }
@@ -317,34 +279,10 @@ function storeTaskInLocalStorage(task) {
   TaskManager.storeItem(tasksList)
 }
 
-function findLocalStorageTask(taskID) {
-  const localStorageTasks = TaskManager.loadItem()
-  const updatedTask = localStorageTasks.find(task => task.id === taskID)
-  const taskIndex = localStorageTasks.findIndex(task => task.id === taskID)
-  return [localStorageTasks, updatedTask, taskIndex]
-}
-
-function updateLocalStorageTask(taskID, action, isChecked = false, text = "") {
-  const [localStorageTasks, updatedTask, taskIndex] =
-    findLocalStorageTask(taskID)
-  if (action === ACTIONS.EDIT) {
-    updatedTask.text = text
-    localStorageTasks[taskIndex] = updatedTask
-    TaskManager.storeItem(localStorageTasks)
-  } else if (action === ACTIONS.DELETE) {
-    localStorageTasks.splice(taskIndex, 1)
-    TaskManager.storeItem(localStorageTasks)
-  } else if (action === ACTIONS.COMPLETE) {
-    updatedTask.isCompleted = isChecked
-    localStorageTasks[taskIndex] = updatedTask
-    TaskManager.storeItem(localStorageTasks)
-  }
-}
-
 function loadTasksFromLocalStorage() {
   const tasks = TaskManager.loadItem() || []
   tasks.forEach(task => {
-    taskList.appendChild(createTaskElement(task).DOMelement)
+    taskList.appendChild(renderTask(task).element)
   })
 }
 
@@ -361,3 +299,6 @@ function normalizeOldTasks() {
     TaskManager.storeItem(updatedTaks)
   }
 }
+
+
+
