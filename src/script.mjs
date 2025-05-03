@@ -1,10 +1,11 @@
-import { ACTIONS, FILTERS} from "./ActionKeys.mjs"
+import {FILTERS} from "./ActionKeys.mjs"
 import ThemeManager  from "./Theme/ThemeStorageManager.mjs" 
 import TaskManager from "./Task/TaskStorageManager.mjs"
 import Task from "./Task/TaskModel.mjs"
 import TaskBuilder from "./Task/TaskBuilder.mjs";
 import normalizeTaskData from "./utils/normalizeData.mjs";
 import TaskService from "./Task/TaskService.mjs";
+import { toggleTheme } from "./Theme/ThemeUIManager.mjs";
 
 
 // DOM Elements
@@ -35,7 +36,6 @@ init()
 //Event Listeners
 
 taskForm.addEventListener("submit", event => handleFormSubmit(event))
-taskList.addEventListener("click", event => handleTaskAction(event))
 clearButton.addEventListener("click", clearCompletedTasks)
 toggleThemeButton.addEventListener("click", toggleTheme)
 mediaquery.addEventListener("change", handleLayoutChange)
@@ -65,9 +65,22 @@ function renderTask(rawTask) {
   task.isCompleted = normalized.isCompleted;
 
   const builder = new TaskBuilder(task, {
-    onDelete: () => console.log("Eliminar", task.id),
-    onEdit: () => console.log("Editar", task.id),
-    onToggle: () => console.log("Completar", task.id),
+    onDelete: (taskItem, taskID) => {
+      deleteUITask(taskItem)
+      TaskService.deleteTask(taskID)
+      updatePendingTasksCounter()
+  },
+    onEdit: (taskItem, taskID) => {
+      const newTask = editUITask(taskItem)
+      if (newTask) {
+        TaskService.editTask(taskID, newTask)
+      }
+    },
+    onToggle: (taskItem, taskID, checked) => {
+      toggleTaskUIState(taskItem)
+      TaskService.toggleCompletion(taskID, checked)
+      updatePendingTasksCounter()
+    },
   });
 
   return {
@@ -89,32 +102,6 @@ function handleFormSubmit(event) {
     taskInput.value = ""
     updatePendingTasksCounter()
   }
-}
-
-function handleTaskAction(event) {
-  const target = event.target
-  if (!target) return
-
-  const classList = Array.from(target.classList)
-  const li = target.closest("li")
-
-  if (classList.includes("delete-btn")) {
-    deleteUITask(li)
-    updatePendingTasksCounter()
-  } else if (classList.includes("edit-btn")) {
-    editUITask(li)
-  } else if (classList.includes("check-btn")) {
-    toggleCheckTask(li)
-    updatePendingTasksCounter()
-  }
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("dark-theme")
-  const theme = document.body.classList.contains("dark-theme")
-    ? "dark"
-    : "light"
-  ThemeManager.storeItem(theme)
 }
 
 function handleFilterButtonClick(event) {
@@ -167,23 +154,23 @@ function handleLayoutChange(event) {
 
 function deleteUITask(taskItem) {
   if (confirm("Are you sure about removing this task?")) {
-    const taskID = taskItem.querySelector("label").attributes.for.value
     taskItem.remove()
-    TaskService.deleteTask(taskID)
   }
 }
 
 function editUITask(taskItem) {
+  const currentText = taskItem.querySelector("label").textContent
   const newTask = prompt(
     "Please edit the task:",
-    taskItem.querySelector("label").textContent
+    currentText
   )
   if (newTask !== null) {
     const paragraph = taskItem.querySelector("label")
     paragraph.textContent = newTask
-    const taskID = paragraph.attributes.for.value
-    TaskService.editTask(taskID, newTask)
+    return newTask
   }
+
+  return null
 }
 
 function toggleTaskUIState(taskItem) {
@@ -191,12 +178,6 @@ function toggleTaskUIState(taskItem) {
   const paragraph = taskItem.querySelector(".task__text")
   button.classList.toggle("task__checked-btn")
   paragraph.classList.toggle("task__text-checked")
-  return { id: button.id, isChecked: button.checked }
-}
-
-function toggleCheckTask(taskItem) {
-  const { id, isChecked } = toggleTaskUIState(taskItem)
-  TaskService.toggleCompletion(id, isChecked)
 }
 
 function changeFilterTextColor(eventTarget, className, ...buttons) {
@@ -299,6 +280,3 @@ function normalizeOldTasks() {
     TaskManager.storeItem(updatedTaks)
   }
 }
-
-
-

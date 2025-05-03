@@ -1,13 +1,13 @@
-import { ACTIONS } from "../ActionKeys.mjs";
-
 export default class TaskBuilder {
     constructor(task, handlers) {
         this.task = task;
-        this.handlers = handlers; // { onDelete, onEdit, onToggle }
+        this.handlers = handlers;
+        this.li = null;
     }
 
     build() {
         const li = this.#createElement("li", "task__item");
+        this.li = li;
         const descriptionBlock = this.#createElement("div", "task__description");
         const checkbox = this.#createCheckbox(this.task.id);
         const label = this.#createElement("label", "task__text", this.task.text);
@@ -20,17 +20,17 @@ export default class TaskBuilder {
         }
 
         checkbox.addEventListener("change", () =>
-            this.handlers.onToggle?.(this.task.id, checkbox.checked)
+            this.handlers.onToggle?.(this.li, this.task.id, checkbox.checked)
         );
 
         descriptionBlock.append(checkbox, label);
 
         const editBlock = this.#createElement("div", "task__edit-container");
         const deleteBtn = this.#createButton("delete-btn", "Delete", () =>
-            this.handlers.onDelete?.(this.task.id)
+            this.handlers.onDelete?.(this.li, this.task.id)
         );
         const editBtn = this.#createButton("edit-btn", "Edit", () =>
-            this.handlers.onEdit?.(this.task.id)
+            this.handlers.onEdit?.(this.li, this.task.id)
         );
 
         editBlock.append(deleteBtn, editBtn);

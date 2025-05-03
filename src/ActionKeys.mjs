@@ -1,9 +1,3 @@
-const ACTIONS = {
-  DELETE: "delete",
-  EDIT: "edit",
-  COMPLETE: "complete",
-}
-
 const FILTERS = {
   ALL: "all",
   ACTIVE: "active",
@@ -15,4 +9,4 @@ const STORAGE_KEYS = {
   THEME: "theme",
 }
 
-export { ACTIONS, FILTERS, STORAGE_KEYS }
+export { FILTERS, STORAGE_KEYS }
