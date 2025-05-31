@@ -6,7 +6,7 @@ import TaskBuilder from "./Task/TaskBuilder.mjs";
 import normalizeTaskData from "./utils/normalizeData.mjs";
 import TaskService from "./Task/TaskService.mjs";
 import { toggleTheme } from "./Theme/ThemeUIManager.mjs";
-
+import TaskUI from "./Task/TaskUiManager.mjs";
 
 // DOM Elements
 const taskForm = document.getElementById("task__form")
@@ -66,18 +66,18 @@ function renderTask(rawTask) {
 
   const builder = new TaskBuilder(task, {
     onDelete: (taskItem, taskID) => {
-      deleteUITask(taskItem)
+      TaskUI.deleteUITask(taskItem)
       TaskService.deleteTask(taskID)
       updatePendingTasksCounter()
   },
     onEdit: (taskItem, taskID) => {
-      const newTask = editUITask(taskItem)
+      const newTask = TaskUI.editUITask(taskItem)
       if (newTask) {
         TaskService.editTask(taskID, newTask)
       }
     },
     onToggle: (taskItem, taskID, checked) => {
-      toggleTaskUIState(taskItem)
+      TaskUI.toggleTaskUIState(taskItem)
       TaskService.toggleCompletion(taskID, checked)
       updatePendingTasksCounter()
     },
@@ -151,34 +151,6 @@ function handleLayoutChange(event) {
 }
 
 // UI Functions
-
-function deleteUITask(taskItem) {
-  if (confirm("Are you sure about removing this task?")) {
-    taskItem.remove()
-  }
-}
-
-function editUITask(taskItem) {
-  const currentText = taskItem.querySelector("label").textContent
-  const newTask = prompt(
-    "Please edit the task:",
-    currentText
-  )
-  if (newTask !== null) {
-    const paragraph = taskItem.querySelector("label")
-    paragraph.textContent = newTask
-    return newTask
-  }
-
-  return null
-}
-
-function toggleTaskUIState(taskItem) {
-  const button = taskItem.querySelector(".check-btn")
-  const paragraph = taskItem.querySelector(".task__text")
-  button.classList.toggle("task__checked-btn")
-  paragraph.classList.toggle("task__text-checked")
-}
 
 function changeFilterTextColor(eventTarget, className, ...buttons) {
   eventTarget.classList.add(className)
