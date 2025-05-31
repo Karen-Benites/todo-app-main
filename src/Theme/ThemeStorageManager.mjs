@@ -1,5 +1,5 @@
-import IStorage from "../IStorage.mjs";
-import { STORAGE_KEYS } from "../ActionKeys.mjs";
+import IStorage from "../IStorage.mjs"
+import { STORAGE_KEYS } from "../ActionKeys.mjs"
 
 class ThemeStorageManager extends IStorage {
   constructor(storage = window.localStorage) {
@@ -13,11 +13,11 @@ class ThemeStorageManager extends IStorage {
   }
 
   loadItem() {
-    return this.storage.getItem(STORAGE_KEYS.THEME);
+    return this.storage.getItem(STORAGE_KEYS.THEME)
   }
 
   storeItem(value) {
-    this.storage.setItem(STORAGE_KEYS.THEME, value);
+    this.storage.setItem(STORAGE_KEYS.THEME, value)
   }
 }
 

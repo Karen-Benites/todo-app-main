@@ -1,12 +1,12 @@
-import {FILTERS} from "./ActionKeys.mjs"
-import ThemeManager  from "./Theme/ThemeStorageManager.mjs" 
+import { FILTERS } from "./ActionKeys.mjs"
+import ThemeManager from "./Theme/ThemeStorageManager.mjs"
 import TaskManager from "./Task/TaskStorageManager.mjs"
 import Task from "./Task/TaskModel.mjs"
-import TaskBuilder from "./Task/TaskBuilder.mjs";
-import normalizeTaskData from "./utils/normalizeData.mjs";
-import TaskService from "./Task/TaskService.mjs";
-import { toggleTheme } from "./Theme/ThemeUIManager.mjs";
-import TaskUI from "./Task/TaskUiManager.mjs";
+import TaskBuilder from "./Task/TaskBuilder.mjs"
+import normalizeTaskData from "./utils/normalizeData.mjs"
+import TaskService from "./Task/TaskService.mjs"
+import { toggleTheme } from "./Theme/ThemeUIManager.mjs"
+import TaskUI from "./Task/TaskUiManager.mjs"
 
 // DOM Elements
 const taskForm = document.getElementById("task__form")
@@ -56,20 +56,16 @@ function init() {
 }
 
 function renderTask(rawTask) {
-  const normalized = normalizeTaskData(rawTask);
-  const task = new Task(
-    normalized.text,
-    normalized.id,
-    normalized.creationDate
-  );
-  task.isCompleted = normalized.isCompleted;
+  const normalized = normalizeTaskData(rawTask)
+  const task = new Task(normalized.text, normalized.id, normalized.creationDate)
+  task.isCompleted = normalized.isCompleted
 
   const builder = new TaskBuilder(task, {
     onDelete: (taskItem, taskID) => {
       TaskUI.deleteUITask(taskItem)
       TaskService.deleteTask(taskID)
       updatePendingTasksCounter()
-  },
+    },
     onEdit: (taskItem, taskID) => {
       const newTask = TaskUI.editUITask(taskItem)
       if (newTask) {
@@ -81,12 +77,12 @@ function renderTask(rawTask) {
       TaskService.toggleCompletion(taskID, checked)
       updatePendingTasksCounter()
     },
-  });
+  })
 
   return {
     element: builder.build(),
     taskInstance: task,
-  };
+  }
 }
 
 // Event hanlders
@@ -96,7 +92,7 @@ function handleFormSubmit(event) {
   const taskInput = document.getElementById("task__input")
   const taskText = taskInput.value.trim()
   if (taskText) {
-    const { element, taskInstance } = renderTask(taskText);
+    const { element, taskInstance } = renderTask(taskText)
     taskList.append(element)
     storeTaskInLocalStorage(taskInstance)
     taskInput.value = ""

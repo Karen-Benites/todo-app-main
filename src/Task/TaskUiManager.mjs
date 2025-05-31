@@ -6,10 +6,7 @@ function deleteUITask(taskItem) {
 
 function editUITask(taskItem) {
   const currentText = taskItem.querySelector("label").textContent
-  const newTask = prompt(
-    "Please edit the task:",
-    currentText
-  )
+  const newTask = prompt("Please edit the task:", currentText)
   if (newTask !== null) {
     const paragraph = taskItem.querySelector("label")
     paragraph.textContent = newTask
@@ -27,7 +24,7 @@ function toggleTaskUIState(taskItem) {
 }
 
 export default {
-    deleteUITask,
-    editUITask,
-    toggleTaskUIState,
-};
+  deleteUITask,
+  editUITask,
+  toggleTaskUIState,
+}
