@@ -78,6 +78,8 @@ Regarding Javascript, this was also my first time trying a js library for helpin
 
 During the refactoring process, I learned the importance and benefits of modularizing a JavaScript project. I explored how to break down the codebase into logical modules based on the main entities of the app, such as task and theme. For each entity, I separated concerns into dedicated files for local storage management and UI handling. This approach made the code more organized, maintainable, and scalable.
 
+Project's current folder structure:
+
 ```
 todo-app-main/
 ├── assets/
@@ -121,3 +123,4 @@ I still need to work on:
 
 - Linkedin - [Karen Benites](https://www.linkedin.com/in/karenlbenites/)
 - Frontend Mentor - [@Karen-Benites](https://www.frontendmentor.io/profile/Karen-Benites)
+- Instagram - [@karensdevia](https://www.instagram.com/karensdevia)
