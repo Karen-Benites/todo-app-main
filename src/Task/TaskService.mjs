@@ -1,5 +1,6 @@
 import TaskManager from "./TaskStorageManager.mjs"
 import Task from "./TaskModel.mjs"
+import TaskUI from "./TaskUiManager.mjs"
 
 function findTaskById(taskID) {
   const tasks = TaskManager.loadItem()
@@ -41,8 +42,22 @@ function toggleCompletion(taskID, isChecked) {
   TaskManager.storeItem(tasks)
 }
 
+function updatePendingTasksCounter(){
+  const itemsLeft = TaskUI.updateUiPendingTasksCounter()
+  const UITaskList = document.querySelector(".task__list")
+  const LiNodeChildren = UITaskList.querySelectorAll("li")
+  console.dir(LiNodeChildren)
+  const placeholder = document.querySelector(".task__placeholder")
+  if (itemsLeft === 0 && !placeholder && LiNodeChildren.length === 0) {
+    TaskUI.createTaskPlaceholder()
+  } else {
+    TaskUI.removeTaskPlaceholder()
+  }
+}
+
 export default {
   deleteTask,
   editTask,
   toggleCompletion,
+  updatePendingTasksCounter
 }

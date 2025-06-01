@@ -23,7 +23,7 @@ const activeButton = filterButtons.children[1]
 new Sortable(document.querySelector(".task__list"), {
   animation: 150,
   onEnd: function (event) {
-    let StorageTasksList = TaskManager.loadItem() || []
+    let StorageTasksList = (TaskManager.loadItem() || []).filter(task => task !== null)
     const movedTask = StorageTasksList.splice(event.oldIndex, 1)[0]
     StorageTasksList.splice(event.newIndex, 0, movedTask)
     TaskManager.storeItem(StorageTasksList)
@@ -44,15 +44,18 @@ filterButtons.addEventListener("click", event => handleFilterButtonClick(event))
 // Main functions
 
 function init() {
+  const tasksList = (TaskManager.loadItem() || []).filter(task => task !== null)
+  TaskManager.storeItem(tasksList)
   normalizeOldTasks()
   loadTasksFromLocalStorage()
-  updatePendingTasksCounter()
+  TaskService.updatePendingTasksCounter()
   handleLayoutChange(mediaquery)
 
   if (currentTheme === "dark") {
     document.body.classList.add("dark-theme")
     toggleThemeButton.classList.add("dark__icon")
   }
+
 }
 
 function renderTask(rawTask) {
@@ -64,7 +67,7 @@ function renderTask(rawTask) {
     onDelete: (taskItem, taskID) => {
       TaskUI.deleteUITask(taskItem)
       TaskService.deleteTask(taskID)
-      updatePendingTasksCounter()
+      TaskService.updatePendingTasksCounter()
     },
     onEdit: (taskItem, taskID) => {
       const newTask = TaskUI.editUITask(taskItem)
@@ -75,7 +78,7 @@ function renderTask(rawTask) {
     onToggle: (taskItem, taskID, checked) => {
       TaskUI.toggleTaskUIState(taskItem)
       TaskService.toggleCompletion(taskID, checked)
-      updatePendingTasksCounter()
+      TaskService.updatePendingTasksCounter()
     },
   })
 
@@ -96,7 +99,7 @@ function handleFormSubmit(event) {
     taskList.append(element)
     storeTaskInLocalStorage(taskInstance)
     taskInput.value = ""
-    updatePendingTasksCounter()
+    TaskService.updatePendingTasksCounter()
   }
 }
 
@@ -187,7 +190,7 @@ function filterTasksOnScreen(filter) {
 // Data Storage Functions
 
 function GetFilteredTasksByStatus(status) {
-  const tasksList = TaskManager.loadItem() || []
+  const tasksList = (TaskManager.loadItem() || []).filter(task => task !== null)
   switch (status) {
     case FILTERS.COMPLETED:
       return tasksList.filter(task => task.isCompleted === true)
@@ -196,14 +199,6 @@ function GetFilteredTasksByStatus(status) {
     case FILTERS.ACTIVE:
       return tasksList.filter(task => task.isCompleted === false)
   }
-}
-
-function updatePendingTasksCounter() {
-  const totalTasks = taskList.children.length
-  const completedTasks = GetFilteredTasksByStatus(FILTERS.COMPLETED).length
-  const itemsLeft = totalTasks - completedTasks
-  const span = document.querySelector(".task__management span")
-  if (span) span.textContent = itemsLeft
 }
 
 function getTaskData(task) {
@@ -219,7 +214,7 @@ function clearCompletedTasks() {
     taskLiParent.remove()
     TaskService.deleteTask(ID)
   })
-  updatePendingTasksCounter()
+  TaskService.updatePendingTasksCounter()
 }
 
 function storeTaskInLocalStorage(task) {

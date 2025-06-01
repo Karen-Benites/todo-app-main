@@ -1,3 +1,5 @@
+import TaskManager from "./TaskStorageManager.mjs"
+
 function deleteUITask(taskItem) {
   if (confirm("Are you sure about removing this task?")) {
     taskItem.remove()
@@ -23,15 +25,34 @@ function toggleTaskUIState(taskItem) {
   paragraph.classList.toggle("task__text-checked")
 }
 
-function toggleTaskPlaceholder() {
+function createTaskPlaceholder() {
+  const placeholder = document.createElement("span")
+  placeholder.className = "task__placeholder"
+  placeholder.textContent = "No tasks available. Please add a task."
+  document.querySelector(".task__list").appendChild(placeholder)
+}
+
+function removeTaskPlaceholder() {
   const placeholder = document.querySelector(".task__placeholder")
   if (placeholder) {
-    placeholder.classList.toggle("task__placeholder-hidden")
+    placeholder.remove()
   }
+}
+
+function updateUiPendingTasksCounter() {
+  const totalTasks = (TaskManager.loadItem() || []).filter(task => task !== null)
+  const completedTasks = totalTasks.filter(task => task.isCompleted === true)
+  const itemsLeft = totalTasks.length - completedTasks.length
+  const span = document.querySelector(".task__management span")
+  if (span) span.textContent = itemsLeft
+  return itemsLeft
 }
 
 export default {
   deleteUITask,
   editUITask,
   toggleTaskUIState,
+  createTaskPlaceholder,
+  removeTaskPlaceholder,
+  updateUiPendingTasksCounter
 }
