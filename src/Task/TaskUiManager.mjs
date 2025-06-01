@@ -23,6 +23,13 @@ function toggleTaskUIState(taskItem) {
   paragraph.classList.toggle("task__text-checked")
 }
 
+function toggleTaskPlaceholder() {
+  const placeholder = document.querySelector(".task__placeholder")
+  if (placeholder) {
+    placeholder.classList.toggle("task__placeholder-hidden")
+  }
+}
+
 export default {
   deleteUITask,
   editUITask,
