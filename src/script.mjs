@@ -209,6 +209,10 @@ function getTaskData(task) {
 }
 
 function clearCompletedTasks() {
+  const tasksList = TaskManager.loadItem() || []
+  if (tasksList.length === 0) {
+    return
+  }
   GetFilteredTasksByStatus(FILTERS.COMPLETED).forEach(task => {
     const [ID, , taskLiParent] = getTaskData(task)
     taskLiParent.remove()
