@@ -38,8 +38,6 @@ Users should be able to:
 
 ### Links
 
-<!-- - Solution URL: [Add solution URL here](https://your-solution-url.com) -->
-
 - Live Site URL: [live site URL here](https://karen-benites.github.io/todo-app-main/)
 
 ## My process
@@ -69,8 +67,6 @@ I also had my first experience handling form data directly from HTML, which was 
 
 💡 CSS tip: Check out how I implemented dark theme styles by reusing existing CSS classes effectively.
 
-Regarding Javascript, this was also my first time trying a js library for helping me building the drag and drop functionality: Sortable js. After doing some internet research, I found out this simple yet effective library that, with few lines of code, allowed me to build an amazing drag and drop effect on tasks.
-
 ```css
 .dark-theme .task__dashboard,
 .dark-theme .task__summary {
@@ -78,96 +74,45 @@ Regarding Javascript, this was also my first time trying a js library for helpin
 }
 ```
 
-js: How I refactored a function with lots of duplicated code.
+Regarding Javascript, this was also my first time trying a js library for helping me building the drag and drop functionality: Sortable js. After doing some internet research, I found out this simple yet effective library that, with few lines of code, allowed me to build an amazing drag and drop effect on tasks.
 
-It went from this:
+During the refactoring process, I learned the importance and benefits of modularizing a JavaScript project. I explored how to break down the codebase into logical modules based on the main entities of the app, such as task and theme. For each entity, I separated concerns into dedicated files for local storage management and UI handling. This approach made the code more organized, maintainable, and scalable.
 
-```js
-function filterTasks(filter) {
-  const tasksList = JSON.parse(localStorage.getItem("tasks")) || []
-  const completedTasks = tasksList.filter(task => task.isCompleted === true)
-  const activeTasks = tasksList.filter(task => task.isCompleted === false)
-  switch (filter) {
-    case "all":
-      tasksList.forEach(task => {
-        const ID = task.id
-        const taskElement = document.getElementById(`${ID}`)
-        const taskLiParent = taskElement.closest("li")
-        taskLiParent.classList.remove("hidden")
-      })
-
-      break
-    case "completed":
-      activeTasks.forEach(task => {
-        const ID = task.id
-        const taskElement = document.getElementById(`${ID}`)
-        const taskLiParent = taskElement.closest("li")
-        taskLiParent.classList.add("hidden")
-      })
-      completedTasks.forEach(task => {
-        const ID = task.id
-        const taskElement = document.getElementById(`${ID}`)
-        const taskLiParent = taskElement.closest("li")
-        taskLiParent.classList.remove("hidden")
-      })
-      break
-    case "active":
-      completedTasks.forEach(task => {
-        const ID = task.id
-        const taskElement = document.getElementById(`${ID}`)
-        const taskLiParent = taskElement.closest("li")
-        taskLiParent.classList.add("hidden")
-      })
-      activeTasks.forEach(task => {
-        const ID = task.id
-        const taskElement = document.getElementById(`${ID}`)
-        const taskLiParent = taskElement.closest("li")
-        taskLiParent.classList.remove("hidden")
-      })
-      break
-  }
-}
+```
+todo-app-main/
+├── assets/
+│   ├── images/
+│   └── icons/
+├── src/
+│   ├── ActionKeys.mjs
+│   ├── IStorage.mjs
+│   ├── script.mjs
+│   ├── Theme/
+│   │   ├── ThemeStorageManager.mjs
+│   │   └── ThemeUIManager.mjs
+│   ├── Task/
+│   │   ├── TaskBuilder.mjs
+│   │   ├── TaskModel.mjs
+│   │   ├── TaskService.mjs
+│   │   ├── TaskStorageManager.mjs
+│   │   └── TaskUiManager.mjs
+│   └── utils/
+│       └── normalizeData.mjs
+├── index.html
+├── README.md
+└── style.css
 ```
 
-to this:
+### Continued development
 
-```js
-function filterTasks(filter) {
-  const tasksList = getTasksList("all")
-  const completedTasks = getTasksList("completed")
-  const activeTasks = getTasksList("active")
+I still need to work on:
 
-  function processTasksList(targetTasksList, action) {
-    targetTasksList.forEach(task => {
-      const [, , taskLiParent] = getTaskData(task)
-      if (action === "remove") {
-        taskLiParent.classList.remove("hidden")
-      } else if (action === "add") {
-        taskLiParent.classList.add("hidden")
-      }
-    })
-  }
-
-  switch (filter) {
-    case "all":
-      processTasksList(tasksList, "remove")
-      break
-    case "completed":
-      processTasksList(activeTasks, "add")
-      processTasksList(completedTasks, "remove")
-      break
-    case "active":
-      processTasksList(completedTasks, "add")
-      processTasksList(activeTasks, "remove")
-      break
-  }
-}
-```
+- Modularizing the task filtering UI functions (`all`, `active`, `completed`) and Task status updaters in localStorage functions.
 
 ### Useful resources
 
 - [Platzi DOM course](https://platzi.com/cursos/document-object-model/) - This helped me for understanding and practicing DOM manipulation.
-- [Moredev Intermediate JS course](https://github.com/mouredev/hello-javascript) - This repository consists of a series of live classes regarding beginner and intermediate javascript concepts for all purposes. It helped me getting the basis of the language and go further with POO and advanced functions.
+- [Mouredev Intermediate JS course](https://github.com/mouredev/hello-javascript) - This repository consists of a series of live classes regarding beginner and intermediate javascript concepts for all purposes. It helped me getting the basis of the language and go further with POO and advanced functions.
 - [Sortable JS library](https://sortablejs.github.io/Sortable/) - The js library that helped me build the drag and drop functionality
 - [Prettier](https://prettier.io/docs/install) - A js code formatter, ensuring consistent style
 - [Eslint](https://eslint.org/) - An extra code checker to find and fix problems with your JavaScript code, f.e: unused variables.
