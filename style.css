@@ -183,7 +183,7 @@ main {
 .task__list {
   max-height: 308px;
   padding: 4px 28px 4px 12px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .task__item {
